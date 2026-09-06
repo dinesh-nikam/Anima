@@ -287,56 +287,6 @@ All backend endpoints are prefixed with `/api/v1`. Interactive documentation wit
 
 ---
 
-## 🛡️ Enterprise Guardrails & Auditing
-
-- **Memory Pressure Limiting:** Uncompressed frame buffer memory allocation is strictly bounded by a **$64\text{MB}$ hard ceiling** (`width × height × 4 × frames`). Render requests exceeding this threshold or executed under $>85\%$ heap pressure are rejected with `413 Payload Too Large`.
-- **Canvas Dimension Boundaries:** Raster canvas dimensions are capped at $4096 \times 4096\text{px}$.
-- **Rate Limiting:** Sliding-window per-client IP throttling protects render, export, and sync endpoints with standard `X-RateLimit-*` and `Retry-After` HTTP headers.
-- **Path Traversal Prevention:** Storage paths are resolved against root boundaries; relative traversal tokens (`..`, null bytes `\0`, directory separators) are automatically stripped.
-- **Cryptographic Asset Integrity:** Exported artifacts are indexed with tamper-proof SHA-256 checksums verified before delivery.
-
-### Comprehensive Test Suite Verification
-```
-Test Suites: 36 passed, 36 total
-Tests:       295 passed, 295 total
-Snapshots:   0 total
-Result:      100% PASS
-```
-
-- **`backend/test/readme/` (16 suites):** Markdown renderers, component registry, internal/external provider contracts, URL builders, draft lifecycles, publication diffs, revision rollbacks.
-- **`backend/test/gif/` (17 suites):** Animation engine, 35 effect modules, frame rasterizer, median-cut quantizer, Floyd-Steinberg dithering, palette cycling, guardrails, Prometheus metrics, forensic audit.
-- **`backend/test/analytics/` (1 suite):** Streak derivation algorithms and achievement rule engines.
-- **`backend/test/security/` (1 suite):** Path traversal, input sanitization, AES-256-GCM encryption.
-- **`backend/test/e2e/` (1 suite):** Full enterprise end-to-end integration flows.
-
----
-
-## 📄 License
-
-Distributed under the [MIT License](./LICENSE).
-
----
-
-<div align="center">
-<b>Anima</b> • The Autonomous Developer Identity & Procedural Animation Engine
-</div>
- README directly to GitHub branch |
-| `GET` | `/readme/drafts/:id/versions` | Retrieves publication history and rollback checkpoints |
-
-### Procedural GIF Studio (`/api/v1/gif`)
-| Method | Route | Description |
-| :--- | :--- | :--- |
-| `POST` | `/gif/upload` | Uploads source image with binary magic number verification |
-| `POST` | `/gif/projects` | Initializes a new procedural animation project |
-| `POST` | `/gif/projects/:id/randomize` | Applies PRNG seeded procedural effect stack |
-| `POST` | `/gif/projects/:id/render` | Enqueues server-side background GIF rendering job |
-| `GET` | `/gif/render-jobs/:jobId/download`| Streams rendered Netscape 2.0 looping GIF binary |
-| `POST` | `/gif/projects/:id/export` | Triggers multi-format export (`GIF`, `APNG`, `MP4`, `WEBM`) |
-| `GET` | `/gif/exports/:exportId/download` | Downloads exported artifact with SHA-256 validation |
-| `GET` | `/gif/audit` | Triggers instant diagnostic audit across all 35 effects |
-| `GET` | `/gif/metrics` | Exposes Prometheus telemetry counters and histograms |
-
----
 
 ## 🛡️ Security, Observability & Benchmarks
 
@@ -370,8 +320,5 @@ This project is open-source and licensed under the [MIT License](./LICENSE).
 ---
 
 <div align="center">
-<b>VeriFlow (GitContri)</b> • Automated Profiles • Dynamic Markdown • Procedural Animation
+<b>Anima</b> • The Autonomous Developer Identity & Procedural Animation Engine
 </div>
-
-#   A n i m a  
- 
