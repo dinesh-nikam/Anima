@@ -1,0 +1,947 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AuditAction {
+  CONNECTION
+  DISCONNECTION
+  PROFILE_CHANGE
+  README_CREATE
+  README_MODIFY
+  README_DELETE
+  PUBLISHING
+  ROLLBACK
+  AUTH_EVENT
+  ADMIN_ACTION
+  SYNC_STARTED
+  SYNC_COMPLETED
+  SYNC_PARTIAL
+  SYNC_FAILED
+  ACHIEVEMENT_EARNED
+  ACHIEVEMENT_REVOKED
+  ACHIEVEMENT_RECALCULATED
+  README_DRAFT_CREATED
+  README_DRAFT_UPDATED
+  README_DRAFT_DELETED
+  README_DRAFT_DUPLICATED
+  README_TEMPLATE_APPLIED
+  README_THEME_CHANGED
+  README_RENDERED
+  README_VALIDATION_FAILED
+  README_DRAFT_CONFLICT
+  README_PUBLICATION_PREVIEWED
+  README_PUBLICATION_CONFIRMED
+  README_PUBLICATION_STARTED
+  README_PUBLICATION_SUCCEEDED
+  README_PUBLICATION_FAILED
+  README_PUBLICATION_CONFLICT
+  README_PUBLICATION_REAUTH_REQUIRED
+  PROVIDER_CREATED
+  PROVIDER_UPDATED
+  PROVIDER_ENABLED
+  PROVIDER_DISABLED
+  PROVIDER_CONFIGURED
+  PROVIDER_DEPRECATED
+  PROVIDER_HEALTH_CHECKED
+  PROVIDER_FAILURE
+  GIF_IMAGE_UPLOADED
+  GIF_PROJECT_CREATED
+  GIF_PROJECT_UPDATED
+  GIF_PROJECT_DELETED
+  GIF_PROJECT_STATUS_CHANGED
+  GIF_PROJECT_VERSION_SAVED
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  SYSTEM
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  DELETED
+}
+
+enum GithubAccountStatus {
+  CONNECTED
+  SYNCING
+  SYNCED
+  REAUTH_REQUIRED
+  RATE_LIMITED
+  ERROR
+  DISCONNECTED
+}
+
+enum SyncStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  PARTIAL
+  FAILED
+}
+
+enum SyncStage {
+  PROFILE
+  REPOSITORIES
+  LANGUAGES
+  CONTRIBUTIONS
+  ACTIVITY
+  STATISTICS
+}
+
+enum AchievementCategory {
+  CONTRIBUTIONS
+  STREAK
+  REPOSITORIES
+  STARS
+  FORKS
+  PULL_REQUESTS
+  ISSUES
+  REVIEWS
+  LANGUAGES
+  ACTIVITY
+  OPEN_SOURCE
+  MILESTONE
+  SPECIAL
+}
+
+enum AchievementStatus {
+  LOCKED
+  IN_PROGRESS
+  EARNED
+  UNVERIFIED
+  STALE
+  REVOKED
+}
+
+enum AchievementRarity {
+  COMMON
+  UNCOMMON
+  RARE
+  EPIC
+  LEGENDARY
+}
+
+enum TrophyLevel {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+  DIAMOND
+}
+
+model AuditLog {
+  id            String      @id @default(uuid())
+  actor         String      // User ID or SYSTEM
+  action        AuditAction
+  resource      String      // e.g., \"README\"
+  resourceId    String?
+  timestamp     DateTime    @default(now())
+  requestId     String?
+  ipMetadata    String?
+  result        String      // \"SUCCESS\" or \"FAILURE\"
+  failureReason String?
+
+  @@index([actor])
+  @@index([action])
+  @@index([timestamp])
+}
+
+model SystemConfig {
+  key   String @id
+  value String
+}
+
+model User {
+  id            String      @id @default(uuid())
+  email         String?     @unique
+  displayName   String?
+  status        UserStatus  @default(ACTIVE)
+  role          UserRole    @default(USER)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  lastLoginAt   DateTime?
+  version       Int         @default(1)
+
+  githubAccounts GithubAccount[]
+  sessions       UserSession[]
+  achievements   UserAchievement[]
+  trophies       UserTrophy[]
+  readmeDrafts   ReadmeDraft[]
+  readmeVersions ReadmeVersion[]
+  readmePublications ReadmePublication[]
+  readmePublishIntents ReadmePublishIntent[]
+  gifAssets          GifAsset[]
+  gifProjects        GifProject[]
+
+  @@index([email])
+  @@index([status])
+  @@index([role])
+}
+
+model GithubAccount {
+  id               String             @id @default(uuid())
+  userId           String             @unique
+  githubUserId     String             @unique
+  githubLogin      String
+  githubProfileUrl String
+  avatarUrl        String
+  githubName       String?
+  githubEmail      String?
+  scope            String?
+  status           GithubAccountStatus @default(CONNECTED)
+  connectedAt      DateTime           @default(now())
+  lastUsedAt       DateTime           @updatedAt
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  user    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokens  OAuthToken[]
+  repos    GithubRepository[]
+  syncRuns GithubSyncRun[]
+  contributions GithubContribution[]
+  snapshots     GithubAnalyticsSnapshot[]
+
+  @@index([githubUserId])
+  @@index([githubLogin])
+}
+
+model OAuthToken {
+  id                  String   @id @default(uuid())
+  githubAccountId     String
+  accessTokenEncrypted String
+  refreshTokenEncrypted String?
+  tokenType           String
+  expiresAt           DateTime?
+  scopes              String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  lastUsedAt          DateTime?
+
+  githubAccount GithubAccount @relation(fields: [githubAccountId], references: [id], onDelete: Cascade)
+
+  @@index([githubAccountId])
+}
+
+model UserSession {
+  id                    String   @id @default(uuid())
+  userId                String
+  sessionIdentifierHash String   @unique
+  createdAt             DateTime @default(now())
+  expiresAt             DateTime
+  lastSeenAt            DateTime @updatedAt
+  revokedAt             DateTime?
+  ipMetadata            String?
+  userAgentMetadata     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([sessionIdentifierHash])
+}
+
+model GithubRepository {
+  id               String   @id @default(uuid())
+  githubRepoId     String   @unique
+  githubAccountId  String
+  owner            String
+  name             String
+  fullName         String
+  description      String?
+  htmlUrl          String
+  visibility       String   // PUBLIC, PRIVATE
+  isFork           Boolean
+  isArchived       Boolean
+  isDisabled       Boolean
+  createdAt        DateTime
+  updatedAt        DateTime
+  pushedAt         DateTime
+  defaultBranch    String?
+  language        String?
+  stars            Int      @default(0)
+  watchers         Int      @default(0)
+  forks            Int      @default(0)
+  openIssues       Int      @default(0)
+  size             Int
+  topics           String[]
+  fetchedAt        DateTime @default(now())
+
+  githubAccount GithubAccount @relation(fields: [githubAccountId], references: [id], onDelete: Cascade)
+  languages     GithubLanguage[]
+  readmePublications ReadmePublication[]
+  readmeVersions     ReadmeVersion[]
+
+  @@index([githubAccountId])
+  @@index([name])
+}
+
+model GithubLanguage {
+  id           String @id @default(uuid())
+  repositoryId String
+  language     String
+  bytes        Int
+  percentage   Float
+  fetchedAt    DateTime @default(now())
+
+  repository GithubRepository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+
+  @@unique([repositoryId, language])
+}
+
+model GithubSyncRun {
+  id                String     @id @default(uuid())
+  githubAccountId   String
+  syncType          String     // MANUAL, INITIAL, SCHEDULED
+  status            SyncStatus @default(PENDING)
+  startedAt         DateTime   @default(now())
+  completedAt       DateTime?
+  lastSuccessfulStage SyncStage?
+  recordsProcessed  Int        @default(0)
+  recordsCreated    Int        @default(0)
+  recordsUpdated    Int        @default(0)
+  recordsRemoved    Int        @default(0)
+  errorCode         String?
+  errorMessageSafe  String?
+  retryCount        Int        @default(0)
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  githubAccount GithubAccount @relation(fields: [githubAccountId], references: [id], onDelete: Cascade)
+
+  @@index([githubAccountId])
+  @@index([status])
+}
+
+model GithubContribution {
+  id               String   @id @default(uuid())
+  githubAccountId  String
+  date             DateTime
+  commits          Int      @default(0)
+  pullRequests     Int      @default(0)
+  issues           Int      @default(0)
+  reviews          Int      @default(0)
+  total            Int      @default(0)
+  fetchedAt        DateTime @default(now())
+
+  githubAccount GithubAccount @relation(fields: [githubAccountId], references: [id], onDelete: Cascade)
+
+  @@unique([githubAccountId, date])
+  @@index([githubAccountId, date])
+}
+
+model GithubAnalyticsSnapshot {
+  id                String   @id @default(uuid())
+  githubAccountId   String
+  periodType       String   // YEARLY, MONTHLY, LIFETIME
+  periodStart       DateTime
+  periodEnd         DateTime
+  metricPayload     Json
+  sourceDataThrough DateTime
+  calculatedAt      DateTime @default(now())
+  algorithmVersion  String
+  
+  githubAccount GithubAccount @relation(fields: [githubAccountId], references: [id], onDelete: Cascade)
+
+  @@index([githubAccountId])
+  @@index([periodStart])
+}
+
+model GithubActivityEvent {
+  id               String   @id @default(uuid())
+  githubAccountId  String
+  eventType       String
+  repositoryName   String?
+  summary          String?
+  url              String?
+  occurredAt       DateTime
+  fetchedAt        DateTime @default(now())
+
+  @@index([githubAccountId])
+  @@index([occurredAt])
+}
+
+model AchievementDefinition {
+  id            String              @id @default(uuid())
+  code          String              @unique
+  name          String
+  description   String
+  category      AchievementCategory
+  metric        String
+  operator      String              // GTE, LTE, EQ
+  threshold     Float
+  rarity        AchievementRarity   @default(COMMON)
+  icon          String?
+  badge         String?
+  displayOrder   Int                @default(0)
+  enabled       Boolean              @default(true)
+  ruleVersion   String              @default("1.0")
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  userAchievements UserAchievement[]
+}
+
+model UserAchievement {
+  id               String             @id @default(uuid())
+  userId           String
+  achievementId    String
+  status           AchievementStatus  @default(LOCKED)
+  currentValue     Float              @default(0)
+  targetValue      Float
+  progressPercent  Float              @default(0)
+  earnedAt         DateTime?
+  firstEvaluatedAt DateTime           @default(now())
+  lastEvaluatedAt  DateTime           @default(now())
+  evaluationVersion String?
+  sourceSnapshotId  String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement  AchievementDefinition @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+  @@index([userId, status])
+}
+
+model TrophyDefinition {
+  id            String       @id @default(uuid())
+  code          String       @unique
+  name          String
+  category      String
+  level         TrophyLevel  @default(BRONZE)
+  icon          String?
+  achievementId String?      // Optional link to a specific achievement
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  userTrophies UserTrophy[]
+}
+
+model UserTrophy {
+  id               String   @id @default(uuid())
+  userId           String
+  trophyId         String
+  earnedAt         DateTime @default(now())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user    User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trophy  TrophyDefinition @relation(fields: [trophyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, trophyId])
+  @@index([userId])
+}
+
+// ============================================================================
+// PHASE 6 — README RENDERING ENGINE
+// ============================================================================
+
+enum ReadmeTemplateStatus {
+  DRAFT
+  PUBLISHED
+  DEPRECATED
+  DISABLED
+}
+
+enum ReadmeProviderCategory {
+  GITHUB_STATS
+  STREAK
+  TOP_LANGUAGES
+  CONTRIBUTIONS
+  TROPHIES
+  ACHIEVEMENTS
+  BADGES
+  VISITOR_COUNTER
+  ACTIVITY
+  CUSTOM_IMAGE
+}
+
+enum ProviderStatus {
+  ENABLED
+  DISABLED
+  DEGRADED
+  UNAVAILABLE
+  DEPRECATED
+}
+
+enum ProviderCapability {
+  STATIC_MARKDOWN
+  DYNAMIC_IMAGE
+  PROFILE_DATA
+  STATISTICS
+  CONTRIBUTION_DATA
+  BADGE
+  TROPHY
+}
+
+enum ProviderFallbackPolicy {
+  HIDE
+  FALLBACK_TO_INTERNAL
+  SHOW_UNAVAILABLE
+  USE_STATIC_FALLBACK
+}
+
+model ReadmeTheme {
+  id            String   @id @default(uuid())
+  themeKey      String   @unique
+  name          String
+  description   String
+  version       String   @default("1.0.0")
+  configuration Json
+  isSystem      Boolean  @default(false)
+  enabled       Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  templates ReadmeTemplate[]
+
+  @@index([enabled])
+}
+
+model ReadmeComponentDefinition {
+  id                   String   @id @default(uuid())
+  componentKey         String   @unique
+  name                 String
+  description          String
+  category             String
+  version              String   @default("1.0.0")
+  configurationSchema  Json
+  defaultConfiguration Json
+  requiredData         String[]
+  optionalData         String[]
+  supportedThemes      String[]
+  enabled              Boolean  @default(true)
+  displayOrder         Int      @default(0)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  sections ReadmeTemplateSection[]
+
+  @@index([enabled])
+  @@index([category])
+}
+
+model ReadmeProviderDefinition {
+  id              String                 @id @default(uuid())
+  providerKey     String                 @unique
+  name            String
+  category        ReadmeProviderCategory
+  baseUrl         String
+  allowedHosts    String[]
+  parameterSchema Json
+  enabled         Boolean                @default(true)
+  version         String                 @default("1.0.0")
+  configuration   Json
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+
+  @@index([enabled])
+  @@index([category])
+}
+
+model DynamicProvider {
+  id                   String                 @id @default(uuid())
+  providerKey          String                 @unique
+  name                 String
+  description          String
+  category             ReadmeProviderCategory
+  version              String                 @default("1.0.0")
+  status               ProviderStatus         @default(ENABLED)
+  capabilities         ProviderCapability[]
+  supportedComponents  String[]
+  baseUrl              String
+  allowedHosts         String[]
+  configurationSchema  Json                   @default("[]")
+  defaultConfiguration Json                   @default("{}")
+  documentationUrl     String?
+  isSystem             Boolean                @default(false)
+  lastCheckedAt        DateTime?
+  lastSuccessAt        DateTime?
+  lastFailureAt        DateTime?
+  failureCount         Int                    @default(0)
+  latencyMs            Int?
+  errorCategory        String?
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+
+  configs              ProviderConfig[]
+
+  @@index([status])
+  @@index([category])
+}
+
+model ProviderConfig {
+  id            String          @id @default(uuid())
+  providerId    String
+  configuration Json            @default("{}")
+  status        ProviderStatus  @default(ENABLED)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  provider      DynamicProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  @@index([providerId])
+}
+
+model ReadmeTemplate {
+  id             String               @id @default(uuid())
+  templateKey    String
+  name           String
+  description    String
+  version        String               @default("1.0.0")
+  status         ReadmeTemplateStatus @default(DRAFT)
+  themeId        String?
+  configuration  Json
+  schemaVersion  String               @default("1.0.0")
+  isSystem       Boolean              @default(false)
+  createdBy      String?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  themeRef ReadmeTheme?          @relation(fields: [themeId], references: [id])
+  sections ReadmeTemplateSection[]
+
+  @@unique([templateKey, version])
+  @@index([templateKey])
+  @@index([status])
+}
+
+model ReadmeTemplateSection {
+  id               String   @id @default(uuid())
+  templateId       String
+  sectionKey       String
+  componentId      String
+  displayOrder     Int      @default(0)
+  configuration    Json
+  enabled          Boolean  @default(true)
+  schemaVersion    String   @default("1.0.0")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  template ReadmeTemplate          @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  component ReadmeComponentDefinition @relation(fields: [componentId], references: [id])
+
+  @@unique([templateId, sectionKey])
+  @@index([templateId])
+  @@index([componentId])
+}
+
+// ============================================================================
+// PHASE 7 — VISUAL README BUILDER & DRAFT MODELS
+// ============================================================================
+
+enum ReadmeDraftStatus {
+  DRAFT
+  VALID
+  INVALID
+  ARCHIVED
+}
+
+model ReadmeDraft {
+  id              String             @id @default(uuid())
+  userId          String
+  name            String
+  description     String?
+  templateId      String?
+  templateVersion String             @default("1.0.0")
+  themeId         String             @default("github-dark")
+  themeVersion    String             @default("1.0.0")
+  rendererVersion String             @default("1.0.0")
+  configuration   Json               @default("{}")
+  revision        Int                @default(1)
+  status          ReadmeDraftStatus  @default(DRAFT)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  lastRenderedAt  DateTime?
+
+  user           User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sections       ReadmeSectionInstance[]
+  versions       ReadmeVersion[]
+  publications   ReadmePublication[]
+  publishIntents ReadmePublishIntent[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([userId, updatedAt])
+}
+
+model ReadmeSectionInstance {
+  id               String      @id @default(uuid())
+  draftId          String
+  componentKey     String
+  displayOrder     Int         @default(0)
+  enabled          Boolean     @default(true)
+  configuration    Json        @default("{}")
+  schemaVersion    String      @default("1.0.0")
+  componentVersion String      @default("1.0.0")
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  draft ReadmeDraft @relation(fields: [draftId], references: [id], onDelete: Cascade)
+
+  @@index([draftId])
+  @@index([componentKey])
+  @@index([draftId, displayOrder])
+}
+
+// ============================================================================
+// PHASE 8 — GITHUB README PUBLISHING, SYNC & VERSION CONTROL
+// ============================================================================
+
+enum ReadmePublicationStatus {
+  DRAFT
+  READY
+  PREVIEWED
+  CONFIRMED
+  PUBLISHING
+  PUBLISHED
+  FAILED
+  CANCELLED
+  STALE
+  REAUTH_REQUIRED
+  RATE_LIMITED
+  CONFLICT
+  NO_CHANGES
+}
+
+model ReadmeVersion {
+  id                 String                  @id @default(uuid())
+  userId             String
+  draftId            String?
+  templateId         String
+  templateVersion    String                  @default("1.0.0")
+  themeId            String
+  themeVersion       String                  @default("1.0.0")
+  rendererVersion    String                  @default("1.0.0")
+  canonicalMarkdown  String
+  contentHash        String                  // Deterministic SHA-256 of canonicalMarkdown
+  sourceRevision     Int                     @default(1)
+  metadata           Json                    @default("{}")
+  githubRepositoryId String?
+  branch             String?
+  path               String?                 @default("README.md")
+  commitSha          String?
+  previousFileSha    String?
+  fileSha            String?
+  status             ReadmePublicationStatus @default(PUBLISHED)
+  capturedAt         DateTime                @default(now())
+  createdAt          DateTime                @default(now())
+
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  draft        ReadmeDraft?      @relation(fields: [draftId], references: [id], onDelete: SetNull)
+  repository   GithubRepository? @relation(fields: [githubRepositoryId], references: [id], onDelete: SetNull)
+  publications ReadmePublication[]
+
+  @@index([userId])
+  @@index([draftId])
+  @@index([githubRepositoryId])
+  @@index([contentHash])
+  @@index([createdAt])
+}
+
+model ReadmePublishIntent {
+  id                  String                  @id @default(uuid())
+  userId              String
+  draftId             String
+  githubRepositoryId  String
+  owner               String
+  repo                String
+  branch              String
+  path                String                  @default("README.md")
+  expectedCurrentSha  String?
+  renderedContentHash String
+  canonicalMarkdown   String
+  commitMessage       String?
+  diffSummary         Json?
+  status              ReadmePublicationStatus @default(PREVIEWED)
+  expiresAt           DateTime
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @updatedAt
+
+  user  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  draft ReadmeDraft @relation(fields: [draftId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([draftId])
+  @@index([expiresAt])
+  @@index([status])
+}
+
+model ReadmePublication {
+  id                 String                  @id @default(uuid())
+  userId             String
+  draftId            String
+  versionId          String?
+  githubRepositoryId String
+  owner              String
+  repo               String
+  branch             String
+  path               String                  @default("README.md")
+  previousFileSha    String?
+  publishedFileSha   String?
+  commitSha          String?
+  commitUrl          String?
+  contentHash        String
+  status             ReadmePublicationStatus @default(PUBLISHED)
+  errorCode          String?
+  errorMessage       String?
+  isNoOp             Boolean                 @default(false)
+  diffSummary        Json?
+  createdAt          DateTime                @default(now())
+  completedAt        DateTime?
+
+  user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  draft      ReadmeDraft       @relation(fields: [draftId], references: [id], onDelete: Cascade)
+  version    ReadmeVersion?    @relation(fields: [versionId], references: [id], onDelete: SetNull)
+  repository GithubRepository  @relation(fields: [githubRepositoryId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([draftId])
+  @@index([githubRepositoryId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// RANDOM GIF ANIMATION STUDIO — PHASE 1 DOMAIN MODELS
+// ============================================================================
+
+enum GifProjectStatus {
+  DRAFT
+  ANALYZING
+  READY
+  RENDERING
+  RENDERED
+  EXPORTING
+  EXPORTED
+  ANALYSIS_FAILED
+  RENDER_FAILED
+  EXPORT_FAILED
+  CANCELLED
+}
+
+enum GifAssetFormat {
+  PNG
+  JPEG
+  WEBP
+  GIF
+}
+
+enum GifOutputFormat {
+  GIF
+  MP4
+  WEBM
+  APNG
+}
+
+model GifAsset {
+  id                String         @id @default(uuid())
+  userId            String
+  originalFilename  String
+  sanitizedFilename String
+  storageKey        String         @unique
+  mimeType          String
+  format            GifAssetFormat
+  fileSizeBytes     Int
+  fileHash          String         // SHA-256 hex digest
+  width             Int
+  height            Int
+  hasAlpha          Boolean        @default(false)
+  metadata          Json           @default("{}")
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projects GifProject[]
+
+  @@index([userId])
+  @@index([fileHash])
+  @@index([createdAt])
+}
+
+model GifProject {
+  id                     String           @id @default(uuid())
+  userId                 String
+  name                   String
+  originalAssetId        String
+  originalImageHash      String           // Deterministic source image hash
+  width                  Int
+  height                 Int
+  format                 GifAssetFormat
+  animationConfiguration Json             @default("{}")
+  randomSeed             BigInt           @default(0)
+  rendererVersion        String           @default("1.0.0")
+  effectEngineVersion    String           @default("1.0.0")
+  duration               Float            @default(3.0)
+  fps                    Int              @default(15)
+  outputFormat           GifOutputFormat  @default(GIF)
+  outputWidth            Int
+  outputHeight           Int
+  status                 GifProjectStatus @default(DRAFT)
+  statusReason           String?
+  metadata               Json             @default("{}")
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime         @updatedAt
+
+  user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  asset      GifAsset            @relation(fields: [originalAssetId], references: [id], onDelete: Restrict)
+  versions   GifProjectVersion[]
+  renderJobs GifRenderJob[]
+
+  @@index([userId])
+  @@index([originalAssetId])
+  @@index([status])
+  @@index([randomSeed])
+  @@index([createdAt])
+}
+
+model GifProjectVersion {
+  id                     String   @id @default(uuid())
+  projectId              String
+  versionNumber          Int
+  animationConfiguration Json
+  randomSeed             BigInt
+  duration               Float
+  fps                    Int
+  createdAt              DateTime @default(now())
+
+  project GifProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, versionNumber])
+  @@index([projectId])
+  @@index([createdAt])
+}
+
+model GifRenderJob {
+  id              String           @id @default(uuid())
+  projectId       String
+  userId          String
+  status          GifProjectStatus @default(RENDERING)
+  progress        Float            @default(0.0)
+  totalFrames     Int              @default(0)
+  renderedFrames  Int              @default(0)
+  outputAssetPath String?
+  outputSizeBytes Int?
+  errorMessage    String?
+  startedAt       DateTime         @default(now())
+  completedAt     DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  project GifProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+
