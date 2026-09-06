@@ -8,6 +8,15 @@ import { GlobalExceptionFilter } from './observability/logging/global-exception.
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
+
+  process.on('uncaughtException', (err) => {
+    logger.error(`Uncaught exception: ${err.message}`, err.stack);
+  });
+
+  process.on('unhandledRejection', (reason: any) => {
+    logger.error(`Unhandled rejection: ${reason?.message || reason}`);
+  });
+
   const app = await NestFactory.create(AppModule);
 
   app.use(express.json({ limit: '5mb' }));

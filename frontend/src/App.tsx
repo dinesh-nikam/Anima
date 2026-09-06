@@ -1,23 +1,31 @@
 import { useState, useEffect } from 'react';
 import { ReadmeDashboard } from './pages/ReadmeDashboard';
 import { ReadmeBuilderPage } from './pages/ReadmeBuilderPage';
+import { GifStudioPage } from './pages/GifStudioPage';
 
 export function App() {
-  const [activeDraftId, setActiveDraftId] = useState<string | null>(() => {
+  const [currentRoute, setCurrentRoute] = useState<{ type: 'readme-dashboard' | 'readme-builder' | 'gif-studio'; id?: string }>(() => {
     const hash = window.location.hash;
     if (hash.startsWith('#/draft/')) {
-      return hash.replace('#/draft/', '');
+      return { type: 'readme-builder', id: hash.replace('#/draft/', '') };
     }
-    return null;
+    if (hash.startsWith('#/gif')) {
+      const id = hash.startsWith('#/gif/') ? hash.replace('#/gif/', '') : undefined;
+      return { type: 'gif-studio', id };
+    }
+    return { type: 'readme-dashboard' };
   });
 
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash;
       if (hash.startsWith('#/draft/')) {
-        setActiveDraftId(hash.replace('#/draft/', ''));
+        setCurrentRoute({ type: 'readme-builder', id: hash.replace('#/draft/', '') });
+      } else if (hash.startsWith('#/gif')) {
+        const id = hash.startsWith('#/gif/') ? hash.replace('#/gif/', '') : undefined;
+        setCurrentRoute({ type: 'gif-studio', id });
       } else {
-        setActiveDraftId(null);
+        setCurrentRoute({ type: 'readme-dashboard' });
       }
     };
 
@@ -27,24 +35,33 @@ export function App() {
 
   const handleOpenDraft = (draftId: string) => {
     window.location.hash = `#/draft/${draftId}`;
-    setActiveDraftId(draftId);
   };
 
   const handleBackToDashboard = () => {
     window.location.hash = '';
-    setActiveDraftId(null);
   };
 
-  if (activeDraftId) {
+  if (currentRoute.type === 'gif-studio') {
+    return <GifStudioPage onBackToApp={handleBackToDashboard} />;
+  }
+
+  if (currentRoute.type === 'readme-builder' && currentRoute.id) {
     return (
       <ReadmeBuilderPage
-        draftId={activeDraftId}
+        draftId={currentRoute.id}
         onBackToDashboard={handleBackToDashboard}
       />
     );
   }
 
-  return <ReadmeDashboard onOpenDraft={handleOpenDraft} />;
+  return (
+    <ReadmeDashboard
+      onOpenDraft={handleOpenDraft}
+      onOpenGifStudio={() => {
+        window.location.hash = '#/gif';
+      }}
+    />
+  );
 }
 
 export default App;

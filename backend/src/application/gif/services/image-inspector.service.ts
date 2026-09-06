@@ -95,7 +95,7 @@ export class ImageInspectorService {
    */
   sanitizeFilename(rawFilename: string): string {
     if (!rawFilename || typeof rawFilename !== 'string') {
-      return 'image_' + Date.now();
+      return 'asset_' + Date.now();
     }
 
     // 1. Remove path delimiters and null bytes

@@ -55,6 +55,9 @@ enum AuditAction {
   GIF_PROJECT_DELETED
   GIF_PROJECT_STATUS_CHANGED
   GIF_PROJECT_VERSION_SAVED
+  GIF_IMAGE_ANALYZED
+  GIF_EFFECT_CONFIGURED
+  GIF_PROJECT_RANDOMIZED
 }
 
 enum UserRole {
@@ -891,10 +894,11 @@ model GifProject {
   createdAt              DateTime         @default(now())
   updatedAt              DateTime         @updatedAt
 
-  user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  asset      GifAsset            @relation(fields: [originalAssetId], references: [id], onDelete: Restrict)
-  versions   GifProjectVersion[]
-  renderJobs GifRenderJob[]
+  user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  asset          GifAsset            @relation(fields: [originalAssetId], references: [id], onDelete: Restrict)
+  versions       GifProjectVersion[]
+  renderJobs     GifRenderJob[]
+  analysisResult GifAnalysisResult?
 
   @@index([userId])
   @@index([originalAssetId])
@@ -943,5 +947,65 @@ model GifRenderJob {
   @@index([status])
   @@index([createdAt])
 }
+
+model GifAnalysisResult {
+  id                       String   @id @default(uuid())
+  projectId                String   @unique
+  assetId                  String
+  width                    Int
+  height                   Int
+  aspectRatio              Float
+  hasAlpha                 Boolean  @default(false)
+  alphaCoverage            Float    @default(0.0)
+  brightness               Float
+  contrast                 Float
+  edgeDensity              Float
+  complexity               Float
+  darkSceneConfidence      Float
+  pixelArtConfidence       Float
+  photographicConfidence   Float
+  flatAreaRatio            Float
+  dominantColors           Json     @default("[]")
+  uniqueColorCount         Int      @default(0)
+  features                 Json     @default("{}")
+  segmentationStatus       String   @default("UNAVAILABLE")
+  characterDetectionStatus String   @default("NOT_SUPPORTED")
+  analyzerVersion          String   @default("1.0.0")
+  analysisDurationMs       Int      @default(0)
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  project GifProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([assetId])
+  @@index([createdAt])
+}
+
+model GifEffectDefinition {
+  id                   String   @id
+  name                 String
+  category             String
+  description          String
+  supportedImageTypes  String[] @default([])
+  compatibility        String[] @default([])
+  intensityMin         Float    @default(0.0)
+  intensityMax         Float    @default(1.0)
+  intensityDefault     Float    @default(0.5)
+  defaultParameters    Json     @default("{}")
+  performanceCost      String   @default("LOW") // LOW, MEDIUM, HIGH, EXTREME
+  isLoopSafe           Boolean  @default(true)
+  requiresSegmentation Boolean  @default(false)
+  modifiesGeometry     Boolean  @default(false)
+  modifiesColors       Boolean  @default(false)
+  generatesParticles   Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([category])
+  @@index([performanceCost])
+}
+
+
 
 

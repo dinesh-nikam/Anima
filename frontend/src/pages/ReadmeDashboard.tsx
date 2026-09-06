@@ -4,9 +4,10 @@ import { readmeApi } from '../services/readmeApi';
 
 interface ReadmeDashboardProps {
   onOpenDraft: (draftId: string) => void;
+  onOpenGifStudio?: () => void;
 }
 
-export const ReadmeDashboard: React.FC<ReadmeDashboardProps> = ({ onOpenDraft }) => {
+export const ReadmeDashboard: React.FC<ReadmeDashboardProps> = ({ onOpenDraft, onOpenGifStudio }) => {
   const [drafts, setDrafts] = useState<ReadmeDraft[]>([]);
   const [templates, setTemplates] = useState<TemplateDefinition[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -92,16 +93,29 @@ export const ReadmeDashboard: React.FC<ReadmeDashboardProps> = ({ onOpenDraft })
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setIsCreateModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition-all shadow-lg shadow-indigo-600/30 cursor-pointer"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          <span>Create README</span>
-        </button>
+        <div className="flex items-center gap-3">
+          {onOpenGifStudio && (
+            <button
+              type="button"
+              onClick={onOpenGifStudio}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 text-white transition-all shadow-lg shadow-pink-500/25 cursor-pointer"
+            >
+              <span>🎲</span>
+              <span>GIF Animation Studio</span>
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={() => setIsCreateModalOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition-all shadow-lg shadow-indigo-600/30 cursor-pointer"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            <span>Create README</span>
+          </button>
+        </div>
       </header>
 
       {/* Main Content */}

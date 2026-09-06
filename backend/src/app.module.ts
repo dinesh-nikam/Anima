@@ -17,6 +17,7 @@ import { AchievementService } from './application/achievements/achievement.servi
 import { AchievementRuleEngine } from './application/achievements/rules/rule-engine';
 import { ReadmeController } from './api/controllers/readme.controller';
 import { ReadmeModule } from './application/readme/readme.module';
+import { GifModule } from './application/gif/gif.module';
 import { AuthGuard } from './security/auth.guard';
 
 @Module({
@@ -26,6 +27,7 @@ import { AuthGuard } from './security/auth.guard';
       envFilePath: '.env',
     }),
     ReadmeModule,
+    GifModule,
   ],
   controllers: [
     HealthController,
