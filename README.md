@@ -1,30 +1,33 @@
-# ⚡ VeriFlow (GitContri)
-
 <div align="center">
 
 ```
-██╗   ██╗███████╗██████╗ ██╗███████╗██╗      ██████╗ ██╗    ██╗
-██║   ██║██╔════╝██╔══██╗██║██╔════╝██║     ██╔═══██╗██║    ██║
-██║   ██║█████╗  ██████╔╝██║█████╗  ██║     ██║   ██║██║ █╗ ██║
-╚██╗ ██╔╝██╔══╝  ██╔══██╗██║██╔══╝  ██║     ██║   ██║██║███╗██║
- ╚████╔╝ ███████╗██║  ██║██║██║     ███████╗╚██████╔╝╚███╔███╔╝
-  ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═╝╚═╝     ╚══════╝ ╚═════╝  ╚══╝╚══╝ 
- G I T H U B   P R O F I L E   &   A N I M A T I O N   S T U D I O
+     █████╗ ███╗   ██╗██╗███╗   ███╗ █████╗ 
+    ██╔══██╗████╗  ██║██║████╗ ████║██╔══██╗
+    ███████║██╔██╗ ██║██║██╔████╔██║███████║
+    ██╔══██║██║╚██╗██║██║██║╚██╔╝██║██╔══██║
+    ██║  ██║██║ ╚████║██║██║ ╚═╝ ██║██║  ██║
+    ╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝╚═╝     ╚═╝╚═╝  ╚═╝
 ```
 
-**Enterprise-grade platform for automated GitHub profile synchronization, streak analytics, achievement derivation, dynamic visual README crafting, and procedural GIF/APNG motion graphics.**
+### ✦ Autonomous Developer Identity & Procedural Animation Engine ✦
 
-[![NestJS](https://img.shields.io/badge/NestJS-10.x-E0234E?logo=nestjs&logoColor=white&style=for-the-badge)](https://nestjs.com/)
-[![React 19](https://img.shields.io/badge/React-19.x-61DAFB?logo=react&logoColor=black&style=for-the-badge)](https://react.dev/)
-[![TypeScript 5](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white&style=for-the-badge)](https://www.typescriptlang.org/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?logo=postgresql&logoColor=white&style=for-the-badge)](https://www.postgresql.org/)
-[![Prisma ORM](https://img.shields.io/badge/Prisma-5.x-2D3748?logo=prisma&logoColor=white&style=for-the-badge)](https://www.prisma.io/)
-[![Redis](https://img.shields.io/badge/Redis-7-DC382D?logo=redis&logoColor=white&style=for-the-badge)](https://redis.io/)
-[![Vite 8](https://img.shields.io/badge/Vite-8.x-646CFF?logo=vite&logoColor=white&style=for-the-badge)](https://vitejs.dev/)
-[![Jest Tests](https://img.shields.io/badge/Jest-36%20Suites%20Passed-32CD32?logo=jest&logoColor=white&style=for-the-badge)](https://jestjs.io/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](./LICENSE)
+*Transform static GitHub profiles into living digital artifacts with continuous telemetry sync, automated streak derivation, dynamic visual markdown composition, and a 35-effect procedural motion graphics studio.*
 
-[Architecture](#-system-architecture) • [Core Modules](#-core-platform-modules) • [GIF Animation Studio](#-random-gif-animation-studio) • [Quickstart](#-quickstart) • [API Reference](#-rest-api-reference) • [Security & Benchmarks](#-security-observability--benchmarks)
+<br/>
+
+[![GitHub stars](https://img.shields.io/github/stars/dinesh-nikam/Anima?style=for-the-badge&logo=github&color=6366f1&logoColor=white)](https://github.com/dinesh-nikam/Anima/stargazers)
+[![NestJS](https://img.shields.io/badge/NestJS_10-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)](https://nestjs.com/)
+[![React 19](https://img.shields.io/badge/React_19-06B6D4?style=for-the-badge&logo=react&logoColor=white)](https://react.dev/)
+[![TypeScript 5](https://img.shields.io/badge/TypeScript_5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL_15-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Prisma ORM](https://img.shields.io/badge/Prisma_5-2D3748?style=for-the-badge&logo=prisma&logoColor=white)](https://www.prisma.io/)
+[![Redis](https://img.shields.io/badge/Redis_7-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io/)
+[![Test Coverage](https://img.shields.io/badge/Tests-36_Suites_|_295_Passed-10B981?style=for-the-badge&logo=jest&logoColor=white)](https://jestjs.io/)
+[![License](https://img.shields.io/badge/License-MIT-F59E0B?style=for-the-badge)](./LICENSE)
+
+<br/>
+
+[Overview](#-overview) • [Architecture](#-system-architecture) • [Feature Suite](#-feature-suite) • [Effects Catalog](#-35-procedural-motion-effects) • [Quickstart](#-quickstart) • [API Reference](#-api-telemetry--swagger) • [Security](#-enterprise-guardrails--auditing)
 
 </div>
 
@@ -32,110 +35,119 @@
 
 ## 🌟 Overview
 
-**VeriFlow** (also packaged as **GitContri**) solves the friction of building, maintaining, and automating world-class developer profiles on GitHub. 
+**Anima** breathes life into developer presence. 
 
-It connects to your GitHub account via OAuth, continuously synchronizes repository and contribution streams, derives real-time analytics and trophies, provides a visual drag-and-drop README builder with live AST rendering, and incorporates a built-in **Procedural GIF Animation Studio** for producing dynamic looping badges, banners, and retro pixel-art animations.
+Modern developer profiles are typically static markdown files with hard-coded badges that drift out of sync. **Anima** eliminates this maintenance tax by orchestrating an end-to-end telemetry and creative pipeline:
 
-### The Unified Flow
+1. **Synchronizes Your GitHub DNA:** OAuth-authenticated continuous sync captures commit velocity, pull requests, stargazers, languages, and activity streams.
+2. **Computes Living Metrics:** Derives contribution streak matrices, weekend-to-weekday ratios, and algorithmic milestone achievements across 5 tiered trophy ranks.
+3. **Composes via Visual Studio:** An interactive drag-and-drop studio with real-time AST markdown compiling, curated dark-mode design tokens, and live diff validation.
+4. **Animates Procedurally:** A built-in 35-effect procedural animation studio with computer-vision grid detection that transforms static artwork into looped Netscape GIFs, 32-bit APNGs, and MP4 banners.
+5. **Publishes with 1-Click Safety:** Verifies upstream branch SHAs, presents visual diffs, commits directly to your profile repository (`username/username`), and supports atomic point-in-time rollbacks.
 
-$$\text{GitHub OAuth} \longrightarrow \text{Sync \& Derive Analytics} \longrightarrow \text{Visual README Builder} \longleftrightarrow \text{GIF Animation Studio} \longrightarrow \text{One-Click Publish}$$
+```
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│ GitHub OAuth │ ──> │ Telemetry &  │ ──> │ Visual Draft │ ──> │ Procedural   │ ──> │ 1-Click Safe │
+│ & Ingestion  │     │ Streaks Sync │     │ MD Studio    │     │ Motion GIF   │     │ Commit Push  │
+└──────────────┘     └──────────────┘     └──────────────┘     └──────────────┘     └──────────────┘
+```
 
 ---
 
 ## 🏗️ System Architecture
 
+Anima operates as an enterprise-grade monorepo powered by **NestJS 10** on the backend and **React 19 + Vite 8** on the frontend, coordinated through PostgreSQL and Redis.
+
 ```
-                                 ┌────────────────────────────────────────┐
-                                 │            GitHub Platform             │
-                                 │  (OAuth2, GraphQL, REST, Git Commits)  │
-                                 └──────────────────┬─────────────────────┘
-                                                    │ Webhooks / REST API
-                                                    ▼
+                                  ┌─────────────────────────────────────────┐
+                                  │             GitHub Ecosystem            │
+                                  │   (OAuth2, GraphQL, REST, Git Commits)  │
+                                  └────────────────────┬────────────────────┘
+                                                       │ Webhooks & Polls
+                                                       ▼
 ┌───────────────────────────────────────────────────────────────────────────────────────────┐
-│                                VERIFLOW BACKEND (NestJS 10)                               │
+│                                   ANIMA CORE API (NestJS 10)                              │
 │                                                                                           │
-│  ┌──────────────────────┐  ┌──────────────────────┐  ┌─────────────────────────────────┐  │
-│  │   Auth & Security    │  │     GitHub Sync      │  │     Analytics & Achievements    │  │
-│  │ - AES-256-GCM Tokens │  │ - Multi-stage sync   │  │ - Streak derivation engine      │  │
-│  │ - HttpOnly Sessions  │  │ - Rate-limit backoff │  │ - Trophy evaluation engine      │  │
-│  │ - Rate-limit guards  │  │ - Event streaming    │  │ - Language distribution         │  │
-│  └──────────────────────┘  └──────────────────────┘  └─────────────────────────────────┘  │
+│  ┌───────────────────────┐  ┌───────────────────────┐  ┌───────────────────────────────┐  │
+│  │   Security & Auth     │  │  Telemetry Pipeline   │  │   Analytics & Gamification    │  │
+│  │ - AES-256-GCM Vault   │  │ - Multi-stage sync    │  │ - Streak derivation engine    │  │
+│  │ - HttpOnly Sessions   │  │ - Rate-limit backoff  │  │ - Rule-based achievement engine│ │
+│  │ - Sliding rate limits │  │ - Event stream parser │  │ - Dynamic tiered trophies     │  │
+│  └───────────────────────┘  └───────────────────────┘  └───────────────────────────────┘  │
 │                                                                                           │
-│  ┌────────────────────────────────────────────────┐  ┌─────────────────────────────────┐  │
-│  │             Visual README Engine               │  │      Procedural GIF Studio      │  │
-│  │ - AST Markdown compiler & live preview diff    │  │ - 35 procedural motion effects  │  │
-│  │ - Theme & Template registries                  │  │ - Computer-vision grid detector │  │
-│  │ - Internal & External dynamic providers        │  │ - Median-cut 256 quantizer      │  │
-│  │ - 2-step publish flow with SHA conflict checks │  │ - Netscape GIF & APNG/MP4 export│  │
-│  └────────────────────────────────────────────────┘  └─────────────────────────────────┘  │
+│  ┌─────────────────────────────────────────────────┐  ┌────────────────────────────────┐  │
+│  │             Visual README Studio                │  │    Procedural Motion Engine    │  │
+│  │ - AST compiler & real-time markdown diff engine │  │ - 35 modular procedural effects│  │
+│  │ - Dynamic Provider Registry & Health Watcher    │  │ - CV Run-Length GCD grid scan  │  │
+│  │ - 2-step publish workflow with SHA validation   │  │ - Median-cut 256 color quantization│
+│  │ - Atomic rollback & revision checkpoints        │  │ - Netscape GIF & 32-bit APNG   │  │
+│  └─────────────────────────────────────────────────┘  └────────────────────────────────┘  │
 │                                                                                           │
-│               PostgreSQL 15 (Prisma ORM)     │     Redis 7 (Sessions & Cache)             │
-└─────────────────────────────────────────────────────┬─────────────────────────────────────┘
-                                                      │ REST API (JSON / Cookies)
-                                                      ▼
+│               PostgreSQL 15 (Prisma ORM)      │      Redis 7 (Sessions & Cache)           │
+└──────────────────────────────────────────────────────┬────────────────────────────────────┘
+                                                       │ REST API (/api/v1) & Cookies
+                                                       ▼
 ┌───────────────────────────────────────────────────────────────────────────────────────────┐
-│                                VERIFLOW FRONTEND (React 19)                               │
+│                                   ANIMA STUDIO WEB (React 19)                             │
 │                                                                                           │
-│  ┌──────────────────────┐  ┌──────────────────────┐  ┌─────────────────────────────────┐  │
-│  │   README Dashboard   │  │ Visual Draft Builder │  │     GIF Animation Studio        │  │
-│  │ - Draft management   │  │ - Drag-drop sections │  │ - Real-time 60 FPS Canvas       │  │
-│  │ - Template gallery   │  │ - Component inspector│  │ - PRNG seed randomizer          │  │
-│  │ - Target repo picker │  │ - Live AST & MD diff │  │ - Timeline scrubber & zoom      │  │
-│  │ - Version history    │  │ - Safe commit modal  │  │ - Multi-format export dialog    │  │
-│  └──────────────────────┘  └──────────────────────┘  └─────────────────────────────────┘  │
+│  ┌───────────────────────┐  ┌───────────────────────┐  ┌───────────────────────────────┐  │
+│  │   Dashboard Workspace │  │   Visual Builder Page │  │    Animation Studio Page      │  │
+│  │ - Draft repository    │  │ - Drag-and-drop rack  │  │ - 60 FPS HTML5 Canvas engine  │  │
+│  │ - Template gallery    │  │ - Live split preview  │  │ - PRNG profile randomizer     │  │
+│  │ - Publish audit log   │  │ - Upstream diff modal │  │ - Timeline scrubber & export  │  │
+│  └───────────────────────┘  └───────────────────────┘  └───────────────────────────────┘  │
 └───────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🚀 Core Platform Modules
+## ⚡ Feature Suite
 
-### 1. GitHub Synchronization & Identity (`/api/v1/auth`, `/api/v1/github`)
-- **Encrypted OAuth Session Vault:** OAuth access tokens are encrypted with `AES-256-GCM` before persisting to PostgreSQL and authenticated through secure, `HttpOnly`, `SameSite=Lax` cookie sessions.
-- **Resilient Multi-Stage Synchronization:** Background pipeline partitions data ingestion into 6 isolated stages: `PROFILE` $\to$ `REPOSITORIES` $\to$ `LANGUAGES` $\to$ `CONTRIBUTIONS` $\to$ `ACTIVITY` $\to$ `STATISTICS`.
-- **Rate-Limit & Status Tracking:** Automated backoff with comprehensive status flags (`CONNECTED`, `SYNCING`, `SYNCED`, `RATE_LIMITED`, `REAUTH_REQUIRED`, `ERROR`).
+### 1. Telemetry Ingestion & Identity Engine
+- **Secure Encrypted Token Vault:** OAuth access tokens are secured at rest with authenticated `AES-256-GCM` encryption. Sessions are guarded by `HttpOnly`, `SameSite=Lax` cookies.
+- **6-Stage Resilient Synchronization:** Ingestion tasks are partitioned into discrete failure-isolated stages: `PROFILE` $\to$ `REPOSITORIES` $\to$ `LANGUAGES` $\to$ `CONTRIBUTIONS` $\to$ `ACTIVITY` $\to$ `STATISTICS`.
+- **Intelligent GitHub Quota Management:** Automatic tracking of secondary rate limits with exponential backoff and persistent sync state tracking.
 
-### 2. Analytics, Streaks & Gamification Engine (`/api/v1/analytics`, `/api/v1/achievements`)
-- **Contribution Streak Calculator:** High-precision calculation of current active streak, all-time longest streak, contribution calendar matrices, and weekend activity ratios.
-- **Rule-Based Achievement Engine (`AchievementRuleEngine`):** Configurable conditions calculating user milestone metrics across commit volume, PR velocity, repository stars, and language diversity.
-- **Dynamic Tiered Trophies:** Automated derivation of trophy levels (`BRONZE`, `SILVER`, `GOLD`, `PLATINUM`, `DIAMOND`) exportable directly to the profile builder.
+### 2. Analytics, Streaks & Gamification Engine
+- **Algorithmic Streak Calculation:** Precise computation of current contribution streak, historical longest streak, calendar heatmaps, and weekend velocity indices.
+- **Milestone Rule Engine (`AchievementRuleEngine`):** Real-time evaluation of user achievements derived from commit density, open-source PR merges, stargazer counts, and polyglot diversity.
+- **Dynamic Tiered Trophies:** Automated derivation of collectible trophy badges (`BRONZE` $\to$ `SILVER` $\to$ `GOLD` $\to$ `PLATINUM` $\to$ `DIAMOND`) styled for profile embeds.
 
-### 3. Visual Drag-and-Drop README Builder (`/api/v1/readme`)
-- **Modular Component Registry:** 18+ profile components including Hero banners, GitHub Stats, Top Languages, Streak Stats, Trophy Case, Tech Stack Badges, Social Badges, Dynamic Quotes, and Community Contributors.
-- **Multi-Provider Architecture:** Decoupled internal providers (VeriFlow native telemetry) and external providers (`github-readme-stats`, `streak-stats`, `github-profile-trophy`, `activity-graph`, etc.) equipped with active health checks, circuit breakers, and fallback URL generators.
-- **Curated Theme & Template System:** Built-in design systems (`Dark Modern`, `Cyberpunk`, `Minimalist Light`, `Synthwave 84`, `Nord Frost`, `Dracula`) and role templates (`professional-developer`, `open-source-maintainer`, `minimalist-coder`).
-- **Safe 2-Step GitHub Publishing:** Publication preview generation with side-by-side AST markdown diff, SHA conflict detection against upstream branches, direct commit to `username/username` profile repositories, and point-in-time version rollback.
+### 3. Visual Drag-and-Drop Markdown Studio
+- **18+ Modular Section Blocks:** Hero headers, GitHub Stats cards, Top Language meters, Streak counters, Trophy display cases, Tech Stack matrices, Social badges, and Dynamic quote widgets.
+- **Dual-Provider Architecture:** Native internal telemetry providers coupled with resilient external providers (`github-readme-stats`, `streak-stats`, `github-profile-trophy`, `activity-graph`) with built-in health checks and fallback generators.
+- **Design Tokens & Themes:** Cohesive styling presets (`Dark Modern`, `Cyberpunk`, `Synthwave 84`, `Nord Frost`, `Dracula`, `Minimalist Light`) and starter role templates.
+- **Safe 2-Step GitHub Publishing:** Side-by-side git diff review against target repository branches, upstream collision detection, direct commit to profile repositories (`username/username`), and revision rollbacks.
+
+### 4. Procedural Motion & Animation Studio
+- **CV Image Analysis:** Run-length greatest common divisor (GCD) analysis detects pixel-art grid sizing ($1\times$ to $8\times$), color transitions, and saliency maps.
+- **Dual-Engine Rendering:** 60 FPS client-side HTML5 Canvas preview with playback scrubbers paired with a headless Node.js rasterizer.
+- **High-Fidelity Quantization:** Median-Cut 256-color partitioning with alpha index reservation and 15-bit redmean Euclidean color distance caching.
+- **Dithering & Output Drivers:** Floyd-Steinberg error diffusion with serpentine scanning, Bayer 4x4 matrix ordered dithering, and sub-frame dirty-rect delta compression for lightweight Netscape 2.0 GIFs, 32-bit APNGs, and MP4s.
 
 ---
 
-## 🎬 Random GIF Animation Studio
+## 🎨 35 Procedural Motion Effects
 
-Integrated directly into VeriFlow as both an in-app asset creator and a standalone procedural animation engine.
+The procedural studio provides 35 modular visual shaders categorized across 9 distinct aesthetic groups:
 
-### Computer-Vision Image Analysis
-- **Run-Length GCD Grid Detection:** Automatically identifies pixel-art sprite grid sizing ($1\times$ to $8\times$) using greatest common divisor analysis across row/column run-lengths.
-- **Color Ramp & Saliency Extraction:** Isolates palette transitions, edge gradients, and luminance distributions for intelligent effect targeting.
-
-### 35 Modular Procedural Effects
-Organized into 9 distinct animation categories:
-
-| Category | Effect ID | Description |
+| Category | Effect Identifier | Visual Mechanics |
 | :--- | :--- | :--- |
 | **📷 Camera** | `zoom` | Sinusoidal smooth camera push-in and pull-out |
-| | `camera_shake` | High-frequency rotational and translational impact shake |
-| | `micro_movement` | Organic handheld camera micro-drift |
-| **💡 Lighting** | `glow_pulse` | Dynamic global illumination and luminance pulsing |
-| | `neon_flicker` | Erratic cyber neon tube flicker with sudden voltage drops |
+| | `camera_shake` | High-frequency rotational and translational impact tremor |
+| | `micro_movement` | Organic handheld camera micro-drift simulation |
+| **💡 Lighting** | `glow_pulse` | Dynamic global luminance pulsing |
+| | `neon_flicker` | Erratic cyber neon tube voltage drop simulation |
 | | `light_sweep` | Linear angled beam sweep with customizable specular angle |
-| | `screen_glow` | Vignette-based ambient pulsating border glow |
+| | `screen_glow` | Vignette-based ambient pulsating border illumination |
 | **🌧️ Atmosphere** | `floating_particles`| Ambient drifting dust motes and magical orbs |
 | | `rain` | Angled precipitation streaks with velocity modulation |
 | | `snow` | Gentle sinusoidal fluttering snow drift |
 | | `sparks` | Ascending fiery ember particles with turbulent oscillation |
 | **📺 Retro** | `crt_scanlines` | Analog cathode ray tube raster scanlines with roll |
-| | `vhs_distortion` | Interlaced tracking noise, horizontal jitter, and tape artifacts |
-| | `film_grain` | Temporal monochromatic film noise simulation |
-| | `chromatic_aberration` | Spectral fringe dispersion of RGB color channels |
+| | `vhs_distortion` | Interlaced tracking noise, horizontal jitter, and tape glitches |
+| | `film_grain` | Temporal monochromatic film grain noise simulation |
+| | `chromatic_aberration`| Spectral fringe dispersion of RGB color channels |
 | **⚡ Glitch** | `rgb_shift` | Horizontal color separation on red and blue scanlines |
 | | `pixel_displacement` | Block-based horizontal slice shifting and tearing |
 | | `digital_noise` | Matrix bit-flip digital artifacts and compression noise |
@@ -145,7 +157,7 @@ Organized into 9 distinct animation categories:
 | | `object_bounce` | Elastic squash-and-stretch gravity bounce |
 | **🌀 Distortion** | `wave_distortion` | Dual-axis trigonometric wave surface warping |
 | | `water_ripple` | Concentric circular acoustic wave propagation |
-| **🎨 Color** | `hue_shift` | Full $360^\circ$ continuous chromatic hue cycle |
+| **🎨 Color** | `hue_shift` | Continuous $360^\circ$ chromatic hue rotation cycle |
 | | `saturation_pulse` | Breathing color vibrancy and saturation depth |
 | | `brightness_pulse` | Rhythmic exposure and contrast oscillation |
 | **👾 Pixel Art** | `pixel_jitter` | Integer-quantized retro sprite tremor |
@@ -157,42 +169,8 @@ Organized into 9 distinct animation categories:
 | | `retro_idle_stepped`| Discrete integer-hop idle cycle with zero subpixel blurring |
 | | `parallax_depth` | Multi-plane 3-layer foreground/midground/background parallax |
 
-### Procedural Randomization Profiles
-Includes 6 algorithmic composition profiles with conflict resolution:
+### Algorithmic Randomization Profiles
 - `BALANCED` • `PIXEL_PERFECT` • `GLITCH_CYBER` • `RETRO_ARCADE` • `SUBTLE_AMBIENT` • `CHAOTIC`
-
-### High-Fidelity Quantization & Export
-- **Median-Cut 256-Color Quantizer:** Alpha transparency index reservation with 15-bit redmean Euclidean color-space distance caching.
-- **Advanced Dithering Modes:** Floyd-Steinberg error diffusion with serpentine scanning, Bayer 4x4 matrix ordered dithering, or Zero-Dither nearest-neighbor matching.
-- **Multi-Format Export:** Netscape 2.0 looping animated GIF, 32-bit APNG (true alpha channel), MP4, and WebM with sub-frame dirty rectangle delta compression.
-
----
-
-## 🛠️ Tech Stack & Monorepo Structure
-
-```
-gitcontri/
-├── backend/                  # NestJS 10 Enterprise API Server
-│   ├── prisma/               # Prisma ORM schema (30+ domain models) & migrations
-│   ├── src/
-│   │   ├── api/              # Controllers (Auth, GitHub, Analytics, Achievements, Readme, Gif, Health)
-│   │   ├── application/      # Domain logic (sync, streak calculator, rules, README compiler, GIF engine)
-│   │   ├── infrastructure/   # Prisma service, Redis session store, HTTP clients
-│   │   ├── integration/      # GitHub REST/GraphQL clients with retry and backoff
-│   │   ├── observability/    # Metrics, health checks, structured logging, audit filters
-│   │   └── security/         # EncryptionService (AES-256-GCM), AuthGuard, RateLimitGuard, Sanitizer
-│   └── test/                 # Jest test suites (36 suites: readme, gif, analytics, security, e2e)
-├── frontend/                 # React 19 Single Page Application
-│   ├── src/
-│   │   ├── api/              # Typed REST client services (Auth, GitHub, Readme, Gif)
-│   │   ├── components/
-│   │   │   ├── readme/       # Drag-and-drop sections, AST preview, theme/template pickers, publish modal
-│   │   │   └── gif/          # HTML5 Canvas 60 FPS preview, timeline scrubber, effect controls, export modal
-│   │   ├── pages/            # ReadmeDashboard, ReadmeBuilderPage, GifStudioPage
-│   │   └── types/            # TypeScript interfaces for full platform domain
-├── docker-compose.yml        # Multi-container local orchestration (Postgres, Redis, Backend, Frontend)
-└── .env.example              # Centralized environment template
-```
 
 ---
 
@@ -203,114 +181,146 @@ gitcontri/
 - **npm** $\ge \text{v10.0.0}$
 - **PostgreSQL** $\ge \text{v15}$ & **Redis** $\ge \text{v7}$ (or Docker)
 
-### Option A: Running with Docker Compose (Fastest)
+### Option A: Docker Compose (Recommended)
 
 ```bash
-# Clone the repository
-git clone https://github.com/your-username/gitcontri.git
-cd gitcontri
+# 1. Clone repository
+git clone https://github.com/dinesh-nikam/Anima.git
+cd Anima
 
-# Copy environment variables
+# 2. Configure environment
 cp .env.example .env
 
-# Boot Postgres, Redis, API server, and Web frontend
+# 3. Boot database, cache, backend, and frontend
 docker compose up -d
 ```
 
-- **Frontend:** `http://localhost:5173`
-- **Backend API:** `http://localhost:3000/api/v1`
-- **Swagger Documentation:** `http://localhost:3000/api/docs`
+Access the services:
+- 🌐 **Web Studio:** `http://localhost:5173`
+- ⚡ **REST API:** `http://localhost:3000/api/v1`
+- 📖 **Swagger UI:** `http://localhost:3000/api/docs`
 
 ---
 
-### Option B: Local Manual Setup
+### Option B: Local Development Setup
 
 #### 1. Setup Environment
 ```bash
 cp .env.example .env
-# Edit .env with your PostgreSQL credentials and GitHub OAuth App keys
+# Provide your PostgreSQL connection string and GitHub OAuth application keys
 ```
 
 #### 2. Start PostgreSQL & Redis
-If not using system services, start database containers:
 ```bash
 docker compose up -d postgres redis
 ```
 
-#### 3. Backend Setup & Startup
+#### 3. Backend Setup
 ```bash
 cd backend
 npm install
 
-# Generate Prisma Client & Run Database Migrations
+# Run database migrations and generate client
 npm run prisma:generate
 npm run prisma:migrate
 
-# Start Backend in Development Mode
+# Start in development mode with hot reload
 npm run dev
 ```
 
-#### 4. Frontend Setup & Startup
+#### 4. Frontend Setup
 ```bash
 cd ../frontend
 npm install
 
-# Start Vite Development Server
+# Launch Vite development server
 npm run dev
 ```
-Open `http://localhost:5173` in your browser.
 
 ---
 
-## 📡 REST API Reference
+## 📡 API, Telemetry & Swagger
 
-All backend API routes are prefixed with `/api/v1`. Interactive OpenAPI / Swagger documentation is available at `/api/docs`.
+All backend endpoints are prefixed with `/api/v1`. Interactive documentation with schema definitions is accessible at `/api/docs`.
 
-### Authentication & Identity (`/api/v1/auth`)
-| Method | Route | Description |
-| :--- | :--- | :--- |
-| `GET` | `/auth/github` | Initiates GitHub OAuth authentication redirect flow |
-| `GET` | `/auth/github/callback` | Handles OAuth exchange, sets encrypted session cookie |
-| `GET` | `/auth/session` | Inspects current session token and returns user profile |
-| `POST` | `/auth/logout` | Clears active user session and invalidates cookie |
+### REST Route Directory
 
-### GitHub Sync & Data (`/api/v1/github`)
-| Method | Route | Description |
-| :--- | :--- | :--- |
-| `GET` | `/github/profile` | Fetches synchronized GitHub profile data |
-| `GET` | `/github/repositories` | Lists synchronized public & private repositories |
-| `POST` | `/github/sync` | Triggers background full data synchronization |
-| `GET` | `/github/sync/:id` | Polls current status of a synchronization task |
+| Group | Method | Endpoint | Description |
+| :--- | :--- | :--- | :--- |
+| **Auth** | `GET` | `/auth/github` | Initiates GitHub OAuth authentication handshake |
+| | `GET` | `/auth/github/callback` | Exchanges code, mints encrypted session cookie |
+| | `GET` | `/auth/session` | Inspects current authenticated user session |
+| | `POST` | `/auth/logout` | Terminates active session and clears auth cookies |
+| **GitHub** | `GET` | `/github/profile` | Returns synchronized GitHub developer profile |
+| | `GET` | `/github/repositories` | Lists synchronized public and private repositories |
+| | `POST` | `/github/sync` | Enqueues full background synchronization run |
+| | `GET` | `/github/sync/:id` | Polls progress and status of synchronization task |
+| **Analytics** | `GET` | `/analytics/overview` | Returns aggregate metrics (streaks, commits, stars) |
+| | `GET` | `/analytics/contributions/calendar` | Generates contribution calendar matrix for a year |
+| **Gamification** | `GET` | `/achievements/me` | Retrieves earned badges and computed trophy tiers |
+| | `POST` | `/achievements/me/recalculate` | Forces re-evaluation of achievement rules |
+| **Studio** | `GET` | `/readme/templates` | Lists starter layout blueprints |
+| | `GET` | `/readme/themes` | Catalogs aesthetic color schemes and style tokens |
+| | `GET` | `/readme/components` | Catalogs 18+ modular profile components |
+| | `GET` | `/readme/providers` | Lists dynamic telemetry providers with health status |
+| | `GET` | `/readme/drafts` | Fetches user's saved README drafts |
+| | `POST` | `/readme/drafts` | Creates a new draft from scratch or template |
+| | `GET` | `/readme/drafts/:id` | Loads full draft with section hierarchy |
+| | `PUT` | `/readme/drafts/:id` | Updates draft properties, theme, or metadata |
+| | `POST` | `/readme/drafts/:id/sections` | Appends a section block to a draft |
+| | `PUT` | `/readme/drafts/:id/sections/order` | Reorders section hierarchy in a draft |
+| | `POST` | `/readme/drafts/:id/preview` | Compiles AST and returns live preview markup |
+| | `GET` | `/readme/drafts/:id/markdown` | Emits raw compiled production markdown |
+| | `POST` | `/readme/drafts/:id/publish/preview`| Computes side-by-side git diff against GitHub branch |
+| | `POST` | `/readme/drafts/:id/publish` | Commits verified markdown directly to GitHub branch |
+| | `GET` | `/readme/drafts/:id/versions` | Retrieves revision history and rollback snapshots |
+| **Animation** | `POST` | `/gif/upload` | Uploads source artwork with binary magic verification |
+| | `POST` | `/gif/projects` | Creates a procedural motion graphics project |
+| | `POST` | `/gif/projects/:id/randomize` | Applies seeded procedural effect stack |
+| | `POST` | `/gif/projects/:id/render` | Dispatches headless server GIF rendering job |
+| | `GET` | `/gif/render-jobs/:id/download` | Streams rendered Netscape 2.0 GIF binary |
+| | `POST` | `/gif/projects/:id/export` | Dispatches multi-format export (`GIF`, `APNG`, `MP4`) |
+| | `GET` | `/gif/exports/:id/download` | Streams exported artifact with SHA-256 validation |
+| **Diagnostics**| `GET` | `/health` | Node process health, memory pressure, uptime |
+| | `GET` | `/gif/audit` | Comprehensive subsystem audit across all 35 effects |
+| | `GET` | `/gif/metrics` | Prometheus telemetry counters and latency histograms |
 
-### Analytics & Streaks (`/api/v1/analytics`)
-| Method | Route | Description |
-| :--- | :--- | :--- |
-| `GET` | `/analytics/overview` | Aggregated metrics (commit volume, streaks, PRs, stars) |
-| `GET` | `/analytics/contributions/calendar` | Day-by-day contribution calendar matrix for a given year |
+---
 
-### Gamification & Achievements (`/api/v1/achievements`)
-| Method | Route | Description |
-| :--- | :--- | :--- |
-| `GET` | `/achievements/me` | Fetches unlocked badges and derived trophy tiers |
-| `POST` | `/achievements/me/recalculate` | Re-evaluates achievement rule engine across metrics |
+## 🛡️ Enterprise Guardrails & Auditing
 
-### Visual README Studio (`/api/v1/readme`)
-| Method | Route | Description |
-| :--- | :--- | :--- |
-| `GET` | `/readme/templates` | Catalogs all available starter layout templates |
-| `GET` | `/readme/themes` | Catalogs all visual color schemes and style tokens |
-| `GET` | `/readme/components` | Catalogs all 18+ profile section components |
-| `GET` | `/readme/providers` | Lists dynamic providers with live health states |
-| `GET` | `/readme/drafts` | Lists all README drafts created by user |
-| `POST` | `/readme/drafts` | Creates a new draft from scratch or template |
-| `GET` | `/readme/drafts/:id` | Loads full draft with ordered section instances |
-| `PUT` | `/readme/drafts/:id` | Updates draft metadata, selected theme, or settings |
-| `POST` | `/readme/drafts/:id/sections` | Appends a new section component to a draft |
-| `PUT` | `/readme/drafts/:id/sections/order` | Reorders section layout hierarchy |
-| `POST` | `/readme/drafts/:id/preview` | Compiles AST and returns live preview HTML/Markdown |
-| `GET` | `/readme/drafts/:id/markdown` | Generates raw production Markdown document |
-| `POST` | `/readme/drafts/:id/publish/preview` | Generates side-by-side git diff against target repository |
-| `POST` | `/readme/drafts/:id/publish` | Commits compiled README directly to GitHub branch |
+- **Memory Pressure Limiting:** Uncompressed frame buffer memory allocation is strictly bounded by a **$64\text{MB}$ hard ceiling** (`width × height × 4 × frames`). Render requests exceeding this threshold or executed under $>85\%$ heap pressure are rejected with `413 Payload Too Large`.
+- **Canvas Dimension Boundaries:** Raster canvas dimensions are capped at $4096 \times 4096\text{px}$.
+- **Rate Limiting:** Sliding-window per-client IP throttling protects render, export, and sync endpoints with standard `X-RateLimit-*` and `Retry-After` HTTP headers.
+- **Path Traversal Prevention:** Storage paths are resolved against root boundaries; relative traversal tokens (`..`, null bytes `\0`, directory separators) are automatically stripped.
+- **Cryptographic Asset Integrity:** Exported artifacts are indexed with tamper-proof SHA-256 checksums verified before delivery.
+
+### Comprehensive Test Suite Verification
+```
+Test Suites: 36 passed, 36 total
+Tests:       295 passed, 295 total
+Snapshots:   0 total
+Result:      100% PASS
+```
+
+- **`backend/test/readme/` (16 suites):** Markdown renderers, component registry, internal/external provider contracts, URL builders, draft lifecycles, publication diffs, revision rollbacks.
+- **`backend/test/gif/` (17 suites):** Animation engine, 35 effect modules, frame rasterizer, median-cut quantizer, Floyd-Steinberg dithering, palette cycling, guardrails, Prometheus metrics, forensic audit.
+- **`backend/test/analytics/` (1 suite):** Streak derivation algorithms and achievement rule engines.
+- **`backend/test/security/` (1 suite):** Path traversal, input sanitization, AES-256-GCM encryption.
+- **`backend/test/e2e/` (1 suite):** Full enterprise end-to-end integration flows.
+
+---
+
+## 📄 License
+
+Distributed under the [MIT License](./LICENSE).
+
+---
+
+<div align="center">
+<b>Anima</b> • The Autonomous Developer Identity & Procedural Animation Engine
+</div>
+ README directly to GitHub branch |
 | `GET` | `/readme/drafts/:id/versions` | Retrieves publication history and rollback checkpoints |
 
 ### Procedural GIF Studio (`/api/v1/gif`)
