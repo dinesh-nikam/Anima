@@ -34,11 +34,14 @@ Thumbs.db
 # Nest / TS
 *.tsbuildinfo
 
-# Prisma generated client artifacts (keep schema + migrations)
-backend/prisma/migrations/
+# Prisma generated client artifacts (keep schema + migrations — migrations MUST be tracked for migrate deploy)
 
 # Backend runtime
 backend/dist/
 backend/coverage/
 backend/storage/
 storage/
+
+# Local agent tooling (not part of the product)
+.omo/
+.playwright-mcp/
