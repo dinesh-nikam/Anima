@@ -10,14 +10,14 @@ export interface TemplateGalleryProps {
 export function TemplateGallery({ templates, loading, onSelect }: TemplateGalleryProps) {
   if (loading) {
     return (
-      <div className="rounded-lg border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500">
+      <div className="rounded-panel border border-dashed border-console-600 p-6 text-center font-mono text-sm text-console-500 bg-carbon-850">
         Loading templates…
       </div>
     );
   }
   if (templates.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500">
+      <div className="rounded-panel border border-dashed border-console-600 p-6 text-center font-mono text-sm text-console-500 bg-carbon-850">
         No templates available.
       </div>
     );

@@ -1,26 +1,317 @@
 @import "tailwindcss";
 
+/* ==========================================================================
+   ANIMA — "SIGNAL FEED" DESIGN SYSTEM
+   A broadcast-console / precision-instrument aesthetic.
+   One dominant tone (carbon), one accent (signal acid-green), one neutral
+   system (cool instrument greys). Monospace-led, sharp-edged, scanline.
+   ========================================================================== */
+
+@theme {
+  /* ---- Fonts (display: Space Grotesk · mono/UI: JetBrains Mono) ---- */
+  --font-display: "Space Grotesk", "JetBrains Mono", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  /* ---- Color story ------------------------------------------------ */
+  /* Carbon (dominant surface tone — near-black, neutral, not slate-blue) */
+  --color-carbon-950: #07090c;
+  --color-carbon-900: #0a0d12;
+  --color-carbon-850: #0e1218;
+  --color-carbon-800: #12161d;
+  --color-carbon-750: #171c25;
+  --color-carbon-700: #1b212b;
+  --color-carbon-600: #232a36;
+  --color-carbon-500: #2e3745;
+
+  /* Instrument neutrals (text + hairline borders) */
+  --color-console-100: #e8ecf0;
+  --color-console-200: #c2c9d2;
+  --color-console-300: #9aa3af;
+  --color-console-400: #6f7a88;
+  --color-console-500: #4a545f;
+  --color-console-600: #2b323c;
+  --color-console-700: #1c212a;
+
+  /* Signal acid-green (the single accent — broadcast energy) */
+  --color-signal-300: #d9ff73;
+  --color-signal-400: #c9f75c;
+  --color-signal-500: #b0e63e;
+  --color-signal-600: #8fbf2e;
+
+  /* Warm hazard-amber (reserved: locked / warnings only) */
+  --color-hazard-400: #ffb020;
+  --color-hazard-500: #e6970c;
+
+  /* Alert red (errors only) */
+  --color-alert-400: #ff5d5d;
+  --color-alert-500: #e04343;
+
+  /* ---- Radius: instrument-sharp, NOT rounded-2xl everywhere ------- */
+  --radius-tick: 2px;
+  --radius-panel: 4px;
+  --radius-media: 8px;
+}
+
 @layer base {
+  html {
+    color-scheme: dark;
+  }
+
   body {
-    @apply bg-slate-950 text-slate-100 antialiased font-sans selection:bg-indigo-500 selection:text-white;
+    @apply bg-carbon-950 text-console-100 font-display antialiased;
+    letter-spacing: 0.01em;
+  }
+
+  ::selection {
+    background: var(--color-signal-500);
+    color: var(--color-carbon-950);
+  }
+
+  /* Scrollbars: thin, hairline, signal-tinted on hover */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-carbon-900);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-console-600);
+    border-radius: 0;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-signal-600);
   }
 }
 
-/* Custom modern scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* ==========================================================================
+   SIGNAL MOTIF PRIMITIVES — the differentiation anchor.
+   Every surface gets the thin tick-border language + mono micro-labels.
+   ========================================================================== */
+
+/* The scanline: a 1px signal-green line that sweeps across hero/primary
+   surfaces on load. One strong entrance, then silence. */
+@keyframes scanline-sweep {
+  0% {
+    transform: translateX(-110%);
+  }
+  45% {
+    transform: translateX(110%);
+  }
+  100% {
+    transform: translateX(110%);
+  }
 }
 
-::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
+.scanline {
+  position: relative;
+  overflow: hidden;
+}
+.scanline::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(201, 247, 92, 0.14) 50%,
+    transparent 100%
+  );
+  width: 34%;
+  animation: scanline-sweep 1.6s cubic-bezier(0.77, 0, 0.18, 1) 0.15s both;
+  z-index: 2;
 }
 
-::-webkit-scrollbar-thumb {
-  background: rgba(51, 65, 85, 0.6);
-  border-radius: 9999px;
+/* Corner ticks: the memorable 4-tick frame on hero/dashboard surfaces. */
+.corner-ticks {
+  position: relative;
+}
+.corner-ticks::before,
+.corner-ticks::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+}
+.corner-ticks::before {
+  top: -1px;
+  left: -1px;
+  border-top: 2px solid var(--color-signal-500);
+  border-left: 2px solid var(--color-signal-500);
+}
+.corner-ticks::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 2px solid var(--color-signal-500);
+  border-right: 2px solid var(--color-signal-500);
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(99, 102, 241, 0.6);
+/* Mono micro-label: the console readout that appears above every section. */
+.tick-label {
+  @apply font-mono text-[10px] font-semibold uppercase;
+  letter-spacing: 0.22em;
+  color: var(--color-console-400);
+}
+
+.tick-label-accent {
+  @apply font-mono text-[10px] font-semibold uppercase;
+  letter-spacing: 0.22em;
+  color: var(--color-signal-500);
+}
+
+/* Signal header: the branded console strip. */
+.signal-header {
+  @apply border-b border-console-700 bg-carbon-900/80 backdrop-blur-md;
+}
+
+/* Panels: sharp instrument surfaces with a 1px hairline. */
+.instrument-panel {
+  @apply border border-console-700 bg-carbon-850;
+  border-radius: var(--radius-panel);
+}
+.instrument-panel-hover {
+  @apply border border-console-700 bg-carbon-850 transition-colors;
+  border-radius: var(--radius-panel);
+}
+.instrument-panel-hover:hover {
+  @apply border-signal-600/60;
+}
+
+/* Primary action — solid signal block, no gradient, no glow spam. */
+.console-btn-primary {
+  @apply inline-flex items-center justify-center gap-2 font-mono text-[11px] font-bold uppercase;
+  letter-spacing: 0.14em;
+  color: var(--color-carbon-950);
+  background: var(--color-signal-500);
+  border: 1px solid var(--color-signal-500);
+  border-radius: var(--radius-tick);
+  padding: 0.625rem 1.125rem;
+  transition: background-color 0.16s ease, border-color 0.16s ease,
+    box-shadow 0.16s ease;
+  cursor: pointer;
+}
+.console-btn-primary:hover {
+  background: var(--color-signal-300);
+  border-color: var(--color-signal-300);
+}
+.console-btn-primary:focus-visible {
+  outline: 2px solid var(--color-signal-500);
+  outline-offset: 2px;
+}
+.console-btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Secondary action — hairline console button. */
+.console-btn-secondary {
+  @apply inline-flex items-center justify-center gap-2 font-mono text-[11px] font-bold uppercase;
+  letter-spacing: 0.14em;
+  color: var(--color-console-200);
+  background: var(--color-carbon-800);
+  border: 1px solid var(--color-console-600);
+  border-radius: var(--radius-tick);
+  padding: 0.625rem 1.125rem;
+  transition: border-color 0.16s ease, color 0.16s ease, background-color 0.16s ease;
+  cursor: pointer;
+}
+.console-btn-secondary:hover {
+  border-color: rgba(143, 191, 46, 0.7);
+  color: var(--color-signal-400);
+}
+.console-btn-secondary:focus-visible {
+  outline: 2px solid var(--color-signal-500);
+  outline-offset: 2px;
+}
+.console-btn-secondary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Icon-only console button (duplicate / delete / play etc). */
+.console-icon-btn {
+  @apply inline-flex items-center justify-center p-2 text-console-400 transition-colors;
+  background: var(--color-carbon-800);
+  border: 1px solid var(--color-console-600);
+  border-radius: var(--radius-tick);
+  cursor: pointer;
+}
+.console-icon-btn:hover {
+  color: var(--color-signal-400);
+  border-color: rgba(143, 191, 46, 0.7);
+}
+.console-icon-btn:hover.is-danger {
+  color: var(--color-alert-400);
+  border-color: rgba(224, 67, 67, 0.6);
+}
+
+/* Console badge / tag. */
+.console-badge {
+  @apply inline-flex items-center gap-1 font-mono text-[10px] font-bold uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-console-300);
+  background: var(--color-carbon-800);
+  border: 1px solid var(--color-console-600);
+  border-radius: var(--radius-tick);
+  padding: 0.125rem 0.5rem;
+}
+.console-badge-accent {
+  color: var(--color-signal-500);
+  background: rgba(176, 230, 62, 0.08);
+  border-color: rgba(176, 230, 62, 0.35);
+}
+.console-badge-hazard {
+  color: var(--color-hazard-400);
+  background: rgba(255, 176, 32, 0.08);
+  border-color: rgba(255, 176, 32, 0.35);
+}
+
+/* Tick divider: the asymmetric console rule between sections. */
+.tick-divider {
+  height: 1px;
+  background: var(--color-console-700);
+  position: relative;
+}
+.tick-divider::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 3px;
+  height: 3px;
+  background: var(--color-signal-500);
+}
+
+/* Entrance sequence: single rise-in for primary content. */
+@keyframes console-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.console-rise {
+  animation: console-rise 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.console-rise-1 {
+  animation-delay: 0.04s;
+}
+.console-rise-2 {
+  animation-delay: 0.09s;
+}
+.console-rise-3 {
+  animation-delay: 0.14s;
+}
+
+/* Reduced motion: kill sweeps and rises for vestibular safety. */
+@media (prefers-reduced-motion: reduce) {
+  .scanline::after,
+  .console-rise {
+    animation: none !important;
+  }
 }

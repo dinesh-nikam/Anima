@@ -12,6 +12,7 @@ describe('GithubClient', () => {
         if (key === 'GITHUB_API_BASE_URL') return 'https://api.github.com';
         if (key === 'GITHUB_CLIENT_ID') return 'test-client-id';
         if (key === 'GITHUB_CLIENT_SECRET') return 'test-client-secret';
+        if (key === 'GITHUB_CALLBACK_URL') return 'http://localhost:3000/api/v1/auth/github/callback';
         return undefined;
       }),
     };
@@ -90,6 +91,19 @@ describe('GithubClient', () => {
       const result = await client.verifyWriteAccess('dummy-token', 'otherowner', 'other-repo');
       expect(result.canWrite).toBe(false);
       expect(result.reason).toContain('write/push permissions');
+    });
+  });
+
+  describe('getAuthorizationUrl', () => {
+    it('should include the configured callback and required scopes', () => {
+      const authorizationUrl = new URL(client.getAuthorizationUrl('csrf-state'));
+
+      expect(authorizationUrl.origin).toBe('https://github.com');
+      expect(authorizationUrl.pathname).toBe('/login/oauth/authorize');
+      expect(authorizationUrl.searchParams.get('client_id')).toBe('test-client-id');
+      expect(authorizationUrl.searchParams.get('redirect_uri')).toBe('http://localhost:3000/api/v1/auth/github/callback');
+      expect(authorizationUrl.searchParams.get('state')).toBe('csrf-state');
+      expect(authorizationUrl.searchParams.get('scope')).toBe('user:email,public_repo,repo');
     });
   });
 

@@ -105,6 +105,52 @@ export class SessionService {
     this.memoryStore.delete(`session:${sessionHash}`);
   }
 
+  async setTemporary(key: string, value: string, ttlSeconds: number): Promise<void> {
+    if (this.redis && this.redis.status === 'ready') {
+      try {
+        await this.redis.set(key, value, 'EX', ttlSeconds);
+        return;
+      } catch {
+        // Fall back to memoryStore.
+      }
+    }
+
+    this.memoryStore.set(key, {
+      data: value,
+      expiresAt: Date.now() + ttlSeconds * 1000,
+    });
+  }
+
+  async getTemporary(key: string): Promise<string | null> {
+    if (this.redis && this.redis.status === 'ready') {
+      try {
+        const value = await this.redis.get(key);
+        if (value) return value;
+      } catch {
+        // Fall back to memoryStore.
+      }
+    }
+
+    const item = this.memoryStore.get(key);
+    if (!item) return null;
+    if (Date.now() > item.expiresAt) {
+      this.memoryStore.delete(key);
+      return null;
+    }
+    return item.data;
+  }
+
+  async deleteTemporary(key: string): Promise<void> {
+    if (this.redis && this.redis.status === 'ready') {
+      try {
+        await this.redis.del(key);
+      } catch {
+        // Fall back to memoryStore.
+      }
+    }
+    this.memoryStore.delete(key);
+  }
+
   private hashToken(token: string): string {
     return crypto.createHash('sha256').update(token).digest('hex');
   }

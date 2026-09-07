@@ -1,4 +1,5 @@
 import React, { useRef, useCallback } from 'react';
+import { TickLabel, TickDivider } from '../ui/primitives';
 
 interface TimelineControlsProps {
   isPlaying: boolean;
@@ -46,6 +47,8 @@ export const TimelineControls: React.FC<TimelineControlsProps> = ({
 
   return (
     <div className="gif-timeline-footer">
+      <TickLabel>TIMELINE</TickLabel>
+      <TickDivider />
       {/* Interactive Scrubber Rail */}
       <div
         ref={scrubberRailRef}
@@ -86,7 +89,7 @@ export const TimelineControls: React.FC<TimelineControlsProps> = ({
           </button>
           <button
             type="button"
-            className={`gif-icon-btn primary-play`}
+            className="gif-icon-btn primary-play"
             onClick={onTogglePlay}
             title={isPlaying ? 'Pause (Space)' : 'Play (Space)'}
           >
@@ -102,41 +105,24 @@ export const TimelineControls: React.FC<TimelineControlsProps> = ({
           </button>
 
           {/* Time and Frame Counters */}
-          <div style={{ marginLeft: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 13, fontWeight: 700, fontFamily: 'monospace' }}>
+          <div className="ml-3 flex items-center gap-2">
+            <span className="font-mono text-xs font-bold text-console-100">
               {currentTime.toFixed(2)}s / {duration.toFixed(2)}s
             </span>
-            <span
-              style={{
-                fontSize: 10,
-                fontWeight: 700,
-                background: 'rgba(255,255,255,0.08)',
-                padding: '2px 6px',
-                borderRadius: 4,
-                color: 'var(--gif-text-secondary)',
-              }}
-            >
+            <span className="font-mono text-[10px] font-bold bg-carbon-800 px-1.5 py-0.5 rounded-tick border border-console-600 text-console-300">
               FRAME {currentFrame}/{totalFrames}
             </span>
           </div>
         </div>
 
         {/* Duration & FPS Adjusters */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
-            <span style={{ color: 'var(--gif-text-muted)', fontWeight: 600 }}>FPS:</span>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 font-mono text-xs">
+            <span className="text-console-400 font-bold text-[10px] tracking-widest uppercase">FPS:</span>
             <select
               value={fps}
               onChange={(e) => onFpsChange(Number(e.target.value))}
-              style={{
-                background: 'var(--gif-bg-elevated)',
-                border: '1px solid var(--gif-border)',
-                color: '#ffffff',
-                borderRadius: 6,
-                padding: '3px 8px',
-                fontSize: 12,
-                cursor: 'pointer',
-              }}
+              className="gif-select"
             >
               <option value={8}>8 FPS</option>
               <option value={10}>10 FPS</option>
@@ -148,20 +134,12 @@ export const TimelineControls: React.FC<TimelineControlsProps> = ({
             </select>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
-            <span style={{ color: 'var(--gif-text-muted)', fontWeight: 600 }}>DURATION:</span>
+          <div className="flex items-center gap-1.5 font-mono text-xs">
+            <span className="text-console-400 font-bold text-[10px] tracking-widest uppercase">DURATION:</span>
             <select
               value={duration}
               onChange={(e) => onDurationChange(Number(e.target.value))}
-              style={{
-                background: 'var(--gif-bg-elevated)',
-                border: '1px solid var(--gif-border)',
-                color: '#ffffff',
-                borderRadius: 6,
-                padding: '3px 8px',
-                fontSize: 12,
-                cursor: 'pointer',
-              }}
+              className="gif-select"
             >
               <option value={1.0}>1.0s</option>
               <option value={1.5}>1.5s</option>

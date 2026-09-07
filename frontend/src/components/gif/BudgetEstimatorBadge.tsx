@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { AnimationBudgetEstimate, AnimationEffectInstance } from '../../types/gif';
 import { gifApi } from '../../api/gifClient';
+import { ConsoleBadge, TickLabel } from '../ui/primitives';
 
 interface BudgetEstimatorBadgeProps {
   width: number;
@@ -40,66 +41,44 @@ export const BudgetEstimatorBadge: React.FC<BudgetEstimatorBadgeProps> = ({
   if (!estimate) return null;
 
   return (
-    <div
-      style={{
-        background: 'var(--gif-bg-elevated)',
-        border: '1px solid var(--gif-border)',
-        borderRadius: 10,
-        padding: '10px 14px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 6,
-        fontSize: 11,
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontWeight: 700, color: 'var(--gif-text-muted)' }}>RESOURCE ESTIMATE</span>
-        <span
-          style={{
-            fontWeight: 800,
-            fontSize: 9,
-            padding: '2px 6px',
-            borderRadius: 4,
-            background:
-              estimate.aggregatePerformanceTier === 'LOW'
-                ? 'rgba(16, 185, 129, 0.15)'
-                : estimate.aggregatePerformanceTier === 'MEDIUM'
-                ? 'rgba(245, 158, 11, 0.15)'
-                : 'rgba(239, 68, 68, 0.15)',
-            color:
-              estimate.aggregatePerformanceTier === 'LOW'
-                ? 'var(--gif-accent-emerald)'
-                : estimate.aggregatePerformanceTier === 'MEDIUM'
-                ? 'var(--gif-accent-amber)'
-                : '#ef4444',
-          }}
+    <div className="bg-carbon-800 border border-console-700 rounded-panel p-3 flex flex-col gap-2">
+      <div className="flex items-center justify-between">
+        <TickLabel>RESOURCE ESTIMATE</TickLabel>
+        <ConsoleBadge
+          tone={
+            estimate.aggregatePerformanceTier === 'LOW'
+              ? 'accent'
+              : estimate.aggregatePerformanceTier === 'MEDIUM'
+                ? 'hazard'
+                : 'default'
+          }
         >
           {estimate.aggregatePerformanceTier} TIER
-        </span>
+        </ConsoleBadge>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, color: 'var(--gif-text-secondary)' }}>
+      <div className="grid grid-cols-2 gap-2 font-mono text-[11px] text-console-300">
         <div>
-          <span>Frames: </span>
-          <strong style={{ color: '#ffffff' }}>{estimate.totalFrames}</strong>
+          <span className="text-console-400">Frames: </span>
+          <strong className="text-console-100">{estimate.totalFrames}</strong>
         </div>
         <div>
-          <span>Est. GIF Size: </span>
-          <strong style={{ color: 'var(--gif-accent-cyan)' }}>{estimate.estimatedGifSizeFormatted}</strong>
+          <span className="text-console-400">Est. GIF: </span>
+          <strong className="text-signal-500">{estimate.estimatedGifSizeFormatted}</strong>
         </div>
         <div>
-          <span>Raw Buffer: </span>
-          <strong style={{ color: '#ffffff' }}>{(estimate.totalRawMemoryBytes / (1024 * 1024)).toFixed(1)} MB</strong>
+          <span className="text-console-400">Raw Buffer: </span>
+          <strong className="text-console-100">{(estimate.totalRawMemoryBytes / (1024 * 1024)).toFixed(1)} MB</strong>
         </div>
         <div>
-          <span>Render Latency: </span>
-          <strong style={{ color: 'var(--gif-accent-purple)' }}>{estimate.estimatedRenderTimeFormatted}</strong>
+          <span className="text-console-400">Render: </span>
+          <strong className="text-signal-400">{estimate.estimatedRenderTimeFormatted}</strong>
         </div>
       </div>
 
       {estimate.warnings.length > 0 && (
-        <div style={{ marginTop: 4, color: 'var(--gif-accent-amber)', fontSize: 10, lineHeight: 1.3 }}>
-          ⚠️ {estimate.warnings[0]}
+        <div className="font-mono text-[11px] leading-relaxed text-hazard-400 border border-hazard-400/20 bg-hazard-400/5 rounded-tick px-2 py-1.5">
+          ⚠ {estimate.warnings[0]}
         </div>
       )}
     </div>

@@ -1,6 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import type { ReadmeDraft, TemplateDefinition } from '../types/readme';
-import { readmeApi } from '../services/readmeApi';
+import { getGithubConnectUrl, readmeApi } from '../services/readmeApi';
+import {
+  SignalHeader,
+  CornerTicks,
+  InstrumentPanel,
+  ConsoleBadge,
+  ConsoleButton,
+  ConsoleIconButton,
+  ModalShell,
+  ConsoleSpinner,
+  TickLabel,
+  TickDivider,
+} from '../components/ui/primitives';
 
 interface ReadmeDashboardProps {
   onOpenDraft: (draftId: string) => void;
@@ -12,6 +24,11 @@ export const ReadmeDashboard: React.FC<ReadmeDashboardProps> = ({ onOpenDraft, o
   const [templates, setTemplates] = useState<TemplateDefinition[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [githubConnection, setGithubConnection] = useState<{
+    connected: boolean;
+    login?: string;
+    avatarUrl?: string;
+  }>({ connected: false });
 
   // New Draft Modal State
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -23,12 +40,14 @@ export const ReadmeDashboard: React.FC<ReadmeDashboardProps> = ({ onOpenDraft, o
     setIsLoading(true);
     setErrorMessage(null);
     try {
-      const [loadedDrafts, loadedTemplates] = await Promise.all([
+      const [loadedDrafts, loadedTemplates, session] = await Promise.all([
         readmeApi.listDrafts(),
         readmeApi.getTemplates(),
+        readmeApi.getSession(),
       ]);
       setDrafts(loadedDrafts);
       setTemplates(loadedTemplates);
+      setGithubConnection(session.user?.github || { connected: false });
     } catch (err: any) {
       setErrorMessage(err.message || 'Failed to load drafts');
     } finally {
@@ -80,231 +99,225 @@ export const ReadmeDashboard: React.FC<ReadmeDashboardProps> = ({ onOpenDraft, o
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
-      {/* Top Navigation */}
-      <header className="h-16 border-b border-slate-800 bg-slate-900/60 backdrop-blur-md px-8 flex items-center justify-between sticky top-0 z-20">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center font-black text-white text-sm shadow-md shadow-indigo-600/30">
-            AN
-          </div>
-          <div>
-            <h1 className="text-sm font-bold text-white tracking-tight">Anima</h1>
-            <p className="text-[10px] text-slate-400 font-medium">Visual README & Procedural Motion Studio</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          {onOpenGifStudio && (
-            <button
-              type="button"
-              onClick={onOpenGifStudio}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 text-white transition-all shadow-lg shadow-pink-500/25 cursor-pointer"
-            >
-              <span>🎲</span>
-              <span>GIF Animation Studio</span>
-            </button>
-          )}
-
-          <button
-            type="button"
-            onClick={() => setIsCreateModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition-all shadow-lg shadow-indigo-600/30 cursor-pointer"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            <span>Create README</span>
-          </button>
-        </div>
-      </header>
+    <div className="min-h-screen bg-carbon-950 text-console-100 flex flex-col">
+      <SignalHeader
+        brandMark="AN"
+        brandLabel="Anima · Visual Console"
+        live="PHASE 7 · VISUAL ENGINE"
+        right={
+          <>
+            {githubConnection.connected ? (
+              <ConsoleBadge>
+                GitHub · {githubConnection.login || 'connected'}
+              </ConsoleBadge>
+            ) : (
+              <ConsoleButton
+                variant="secondary"
+                onClick={() => window.location.assign(getGithubConnectUrl())}
+                aria-label="Connect GitHub account"
+              >
+                <span aria-hidden="true">↗</span>
+                <span>Connect GitHub</span>
+              </ConsoleButton>
+            )}
+            {onOpenGifStudio && (
+              <ConsoleButton
+                variant="secondary"
+                onClick={onOpenGifStudio}
+                aria-label="Open GIF Animation Studio"
+              >
+                <span aria-hidden="true">◆</span>
+                <span>GIF Animation Studio</span>
+              </ConsoleButton>
+            )}
+            <ConsoleButton variant="primary" onClick={() => setIsCreateModalOpen(true)}>
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              <span>Create README</span>
+            </ConsoleButton>
+          </>
+        }
+      />
 
       {/* Main Content */}
       <main className="flex-1 p-8 max-w-7xl mx-auto w-full">
-        {/* Banner */}
-        <div className="mb-8 rounded-2xl bg-gradient-to-r from-indigo-950/60 via-slate-900/80 to-purple-950/50 border border-slate-800 p-8 relative overflow-hidden">
-          <div className="max-w-2xl relative z-10">
-            <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 mb-3">
-              Phase 7 Visual Engine
-            </span>
-            <h2 className="text-2xl font-black text-white tracking-tight mb-2">
-              Interactive GitHub README Builder
-            </h2>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              Design, preview, and refine production-grade GitHub profile READMEs powered by authoritative analytics, verified streaks, trophy walls, and dynamic Markdown rendering.
-            </p>
-          </div>
+        {/* Banner — scanline + corner-ticks differentiation anchor */}
+        <div className="mb-8 console-rise console-rise-1">
+          <CornerTicks className="scanline instrument-panel p-8 relative overflow-hidden">
+            <div className="max-w-2xl relative z-10">
+              <TickLabel accent className="mb-3">
+                PHASE 7 · VISUAL ENGINE
+              </TickLabel>
+              <h2 className="text-2xl font-display font-bold text-console-100 tracking-tight mb-2">
+                Interactive GitHub README Builder
+              </h2>
+              <p className="text-xs text-console-300 leading-relaxed">
+                Design, preview, and refine production-grade GitHub profile READMEs powered by authoritative analytics, verified streaks, trophy walls, and dynamic Markdown rendering.
+              </p>
+            </div>
+          </CornerTicks>
         </div>
 
+        <TickDivider className="mb-8" />
+
         {/* Section Heading */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-6 console-rise console-rise-2">
           <div>
-            <h3 className="text-base font-bold text-white tracking-tight">My README Drafts</h3>
-            <p className="text-xs text-slate-400">Manage, edit, and duplicate your profile README configurations</p>
+            <TickLabel className="mb-1">MY README DRAFTS</TickLabel>
+            <h3 className="text-base font-display font-bold text-console-100 tracking-tight">My README Drafts</h3>
+            <p className="text-xs text-console-400">Manage, edit, and duplicate your profile README configurations</p>
           </div>
-          <span className="text-xs text-slate-500 font-mono">{drafts.length} draft{drafts.length === 1 ? '' : 's'}</span>
+          <span className="font-mono text-xs text-console-500">{drafts.length} draft{drafts.length === 1 ? '' : 's'}</span>
         </div>
 
         {/* Drafts Grid */}
-        {isLoading ? (
-          <div className="py-24 text-center text-slate-500">
-            <svg className="w-8 h-8 animate-spin text-indigo-500 mx-auto mb-3" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-            </svg>
-            <p className="text-xs">Loading drafts...</p>
-          </div>
-        ) : errorMessage ? (
-          <div className="p-6 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs text-center">
-            {errorMessage}
-          </div>
-        ) : drafts.length === 0 ? (
-          <div className="text-center py-20 border border-dashed border-slate-800 rounded-2xl p-8">
-            <div className="w-12 h-12 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-500 mx-auto mb-3">
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
+        <div className="console-rise console-rise-3">
+          {isLoading ? (
+            <ConsoleSpinner label="Loading drafts..." />
+          ) : errorMessage ? (
+            <div className="p-6 rounded-panel bg-alert-500/10 border border-alert-500/30 text-alert-400 text-xs text-center font-mono">
+              {errorMessage}
             </div>
-            <h4 className="text-sm font-bold text-white mb-1">No README drafts found</h4>
-            <p className="text-xs text-slate-400 max-w-sm mx-auto mb-4">
-              Get started by creating your first profile README using our curated templates.
-            </p>
-            <button
-              type="button"
-              onClick={() => setIsCreateModalOpen(true)}
-              className="px-4 py-2 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white transition-all cursor-pointer shadow-lg shadow-indigo-600/30"
-            >
-              Create New README
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {drafts.map((draft) => (
-              <div
-                key={draft.id}
-                className="bg-slate-900/60 hover:bg-slate-900 border border-slate-800 hover:border-slate-700/80 rounded-2xl p-6 transition-all flex flex-col justify-between group shadow-lg shadow-black/40"
-              >
-                <div>
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <h4 className="text-base font-bold text-white group-hover:text-indigo-300 transition-colors truncate">
-                      {draft.name}
-                    </h4>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
-                      rev #{draft.revision}
-                    </span>
-                  </div>
-
-                  <p className="text-xs text-slate-400 line-clamp-2 mb-4">
-                    {draft.description || 'Custom profile README layout'}
-                  </p>
-
-                  <div className="space-y-2 mb-6">
-                    <div className="flex items-center justify-between text-[11px] text-slate-400">
-                      <span>Template:</span>
-                      <span className="font-semibold text-slate-200">{draft.templateId || 'Custom'}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-[11px] text-slate-400">
-                      <span>Theme:</span>
-                      <span className="font-semibold text-indigo-400">{draft.themeId}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-[11px] text-slate-400">
-                      <span>Sections:</span>
-                      <span className="font-mono text-slate-300">{draft.sections.length} configured</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t border-slate-800 flex items-center justify-between gap-2">
-                  <button
-                    type="button"
-                    onClick={() => onOpenDraft(draft.id)}
-                    className="flex-1 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition-colors text-center cursor-pointer shadow-sm shadow-indigo-600/30"
-                  >
-                    Open Editor
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleDuplicate(draft.id)}
-                    className="p-2 rounded-xl text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors cursor-pointer"
-                    title="Duplicate Draft"
-                  >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleDelete(draft.id, draft.name)}
-                    className="p-2 rounded-xl text-slate-400 hover:text-rose-400 bg-slate-800 hover:bg-rose-500/10 transition-colors cursor-pointer"
-                    title="Delete Draft"
-                  >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
-                </div>
+          ) : drafts.length === 0 ? (
+            <div className="text-center py-20 border border-dashed border-console-600 rounded-panel p-8 bg-carbon-850">
+              <div className="w-12 h-12 rounded-tick bg-carbon-800 border border-console-600 flex items-center justify-center text-console-500 mx-auto mb-3">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
               </div>
-            ))}
-          </div>
-        )}
+              <h4 className="text-sm font-display font-bold text-console-100 mb-1">No README drafts found</h4>
+              <p className="text-xs text-console-400 max-w-sm mx-auto mb-4">
+                Get started by creating your first profile README using our curated templates.
+              </p>
+              <ConsoleButton variant="primary" onClick={() => setIsCreateModalOpen(true)}>
+                Create New README
+              </ConsoleButton>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {drafts.map((draft) => (
+                <InstrumentPanel
+                  key={draft.id}
+                  hover
+                  className="p-6 flex flex-col justify-between group shadow-lg shadow-black/40"
+                >
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-2">
+                      <h4 className="text-base font-display font-bold text-console-100 group-hover:text-signal-400 transition-colors truncate">
+                        {draft.name}
+                      </h4>
+                      <ConsoleBadge>rev #{draft.revision}</ConsoleBadge>
+                    </div>
+
+                    <p className="text-xs text-console-400 line-clamp-2 mb-4">
+                      {draft.description || 'Custom profile README layout'}
+                    </p>
+
+                    <div className="space-y-2 mb-6">
+                      <div className="flex items-center justify-between text-[11px] text-console-400">
+                        <span>Template:</span>
+                        <span className="font-semibold text-console-200">{draft.templateId || 'Custom'}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-[11px] text-console-400">
+                        <span>Theme:</span>
+                        <span className="font-semibold text-signal-400">{draft.themeId}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-[11px] text-console-400">
+                        <span>Sections:</span>
+                        <span className="font-mono text-console-300">{draft.sections.length} configured</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t border-console-700 flex items-center justify-between gap-2">
+                    <ConsoleButton
+                      variant="primary"
+                      onClick={() => onOpenDraft(draft.id)}
+                      className="flex-1 py-2"
+                    >
+                      Open Editor
+                    </ConsoleButton>
+
+                    <ConsoleIconButton
+                      onClick={() => handleDuplicate(draft.id)}
+                      title="Duplicate Draft"
+                      aria-label={`Duplicate draft ${draft.name}`}
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                    </ConsoleIconButton>
+
+                    <ConsoleIconButton
+                      danger
+                      onClick={() => handleDelete(draft.id, draft.name)}
+                      title="Delete Draft"
+                      aria-label={`Delete draft ${draft.name}`}
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </ConsoleIconButton>
+                  </div>
+                </InstrumentPanel>
+              ))}
+            </div>
+          )}
+        </div>
       </main>
 
       {/* Create Modal */}
-      {isCreateModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg p-6 shadow-2xl">
-            <h3 className="text-base font-bold text-white tracking-tight mb-1">Create New README</h3>
-            <p className="text-xs text-slate-400 mb-6">Choose a title and starting template layout.</p>
+      <ModalShell
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        title="Create New README"
+        eyebrow="NEW DRAFT"
+      >
+        <p className="text-xs text-console-400 mb-6">Choose a title and starting template layout.</p>
 
-            <form onSubmit={handleCreateDraft} className="space-y-4">
-              <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1.5">Draft Name</label>
-                <input
-                  type="text"
-                  value={newDraftName}
-                  onChange={(e) => setNewDraftName(e.target.value)}
-                  required
-                  maxLength={100}
-                  className="w-full bg-slate-800 text-white text-xs px-3 py-2.5 rounded-xl border border-slate-700 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                />
-              </div>
-
-              <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1.5">Starting Template</label>
-                <select
-                  value={selectedTemplateKey}
-                  onChange={(e) => setSelectedTemplateKey(e.target.value)}
-                  className="w-full bg-slate-800 text-white text-xs px-3 py-2.5 rounded-xl border border-slate-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer"
-                >
-                  {templates.map((t) => (
-                    <option key={t.templateKey} value={t.templateKey}>
-                      {t.name} ({t.sections.length} sections)
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="pt-4 flex items-center justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setIsCreateModalOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white bg-slate-800 rounded-xl transition-colors cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isCreating}
-                  className="px-5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-xl transition-colors cursor-pointer shadow-lg shadow-indigo-600/30"
-                >
-                  {isCreating ? 'Creating...' : 'Create & Open'}
-                </button>
-              </div>
-            </form>
+        <form onSubmit={handleCreateDraft} className="space-y-4">
+          <div>
+            <label className="font-mono text-[11px] font-semibold uppercase tracking-wide text-console-300 block mb-1.5">
+              Draft Name
+            </label>
+            <input
+              type="text"
+              value={newDraftName}
+              onChange={(e) => setNewDraftName(e.target.value)}
+              required
+              maxLength={100}
+              className="w-full bg-carbon-800 text-console-100 text-xs px-3 py-2.5 rounded-tick border border-console-600 focus:outline-none focus:ring-1 focus:ring-signal-500 focus:border-signal-500"
+            />
           </div>
-        </div>
-      )}
+
+          <div>
+            <label className="font-mono text-[11px] font-semibold uppercase tracking-wide text-console-300 block mb-1.5">
+              Starting Template
+            </label>
+            <select
+              value={selectedTemplateKey}
+              onChange={(e) => setSelectedTemplateKey(e.target.value)}
+              className="w-full bg-carbon-800 text-console-100 text-xs px-3 py-2.5 rounded-tick border border-console-600 focus:outline-none focus:ring-1 focus:ring-signal-500 focus:border-signal-500 cursor-pointer"
+            >
+              {templates.map((t) => (
+                <option key={t.templateKey} value={t.templateKey}>
+                  {t.name} ({t.sections.length} sections)
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="pt-4 flex items-center justify-end gap-3">
+            <ConsoleButton variant="secondary" onClick={() => setIsCreateModalOpen(false)}>
+              Cancel
+            </ConsoleButton>
+            <ConsoleButton variant="primary" type="submit" disabled={isCreating}>
+              {isCreating ? 'Creating...' : 'Create & Open'}
+            </ConsoleButton>
+          </div>
+        </form>
+      </ModalShell>
     </div>
   );
 };

@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Req, Res, HttpStatus, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, HttpStatus, BadRequestException, UseGuards } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { AuthService } from '../../application/services/auth.service';
+import { AuthGuard } from '../../security/auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -8,8 +9,15 @@ export class AuthController {
 
   @Get('github')
   async startGithubOAuth(@Res() res: Response) {
-    const { url, state } = await this.authService.startGithubOAuth();
+    const { url } = await this.authService.startGithubOAuth();
     // We don't send state to frontend, it's managed by the redirect to GitHub
+    return res.redirect(url);
+  }
+
+  @Get('github/connect')
+  @UseGuards(AuthGuard)
+  async connectGithub(@Req() req: Request, @Res() res: Response) {
+    const { url } = await this.authService.startGithubOAuth(req['user'].id);
     return res.redirect(url);
   }
 
@@ -42,9 +50,9 @@ export class AuthController {
       });
 
       // Redirect back to frontend dashboard
-      return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/dashboard`);
+      return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/#/dashboard?github=connected`);
     } catch (error) {
-      return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?error=auth_failed`);
+      return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/#/dashboard?error=auth_failed`);
     }
   }
 
@@ -61,6 +69,7 @@ export class AuthController {
             id: devUser.id,
             displayName: devUser.displayName,
             role: devUser.role,
+            github: await this.authService.getGithubConnection(devUser.id),
           },
         };
       }
@@ -90,6 +99,7 @@ export class AuthController {
         id: session.user.id,
         displayName: session.user.displayName,
         role: session.user.role,
+        github: await this.authService.getGithubConnection(session.user.id),
       },
     };
   }

@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { TickLabel } from '../ui/primitives';
 
 interface ImageUploadDropzoneProps {
   onFileSelected: (file: File) => void;
@@ -54,12 +55,10 @@ export const ImageUploadDropzone: React.FC<ImageUploadDropzoneProps> = ({
         onChange={handleChange}
         style={{ display: 'none' }}
       />
-      <div style={{ fontSize: 28, marginBottom: 8 }}>🖼️</div>
-      <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>
-        {isUploading ? 'UPLOADING & ANALYZING...' : 'DROP IMAGE HERE'}
-      </div>
-      <div style={{ fontSize: 11, color: 'var(--gif-text-muted)' }}>
-        Supports PNG, JPEG, GIF, WEBP up to 15MB
+      <div className="mx-auto mb-3 h-6 w-[2px] bg-signal-500/60" aria-hidden="true" />
+      <TickLabel accent>{isUploading ? 'UPLOADING & ANALYZING…' : 'DROP IMAGE HERE'}</TickLabel>
+      <div className="font-mono text-[11px] text-console-400 mt-1">
+        PNG · JPEG · GIF · WEBP up to 15MB
       </div>
     </div>
   );

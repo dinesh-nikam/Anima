@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import type { GifProject, GifRenderJob, DitherMode } from '../../types/gif';
 import { gifApi } from '../../api/gifClient';
+import { ModalShell, ConsoleButton, TickLabel, TickDivider } from '../ui/primitives';
 
 interface RenderExportModalProps {
   isOpen: boolean;
@@ -26,14 +27,12 @@ export const RenderExportModal: React.FC<RenderExportModalProps> = ({
   const [renderError, setRenderError] = useState<string | null>(null);
   const pollTimerRef = useRef<number | null>(null);
 
-  // Sync default options when modal opens
   useEffect(() => {
     if (isOpen) {
       setDitherMode(project.animationConfiguration?.pixelArtMode ? 'NONE' : 'FLOYD_STEINBERG');
       setPixelArtMode(project.animationConfiguration?.pixelArtMode ?? false);
       setRenderError(null);
 
-      // Check if project already has a recent completed or running render
       gifApi.getProjectRenderStatus(project.id)
         .then((job) => {
           if (job) {
@@ -52,7 +51,6 @@ export const RenderExportModal: React.FC<RenderExportModalProps> = ({
     }
   }, [isOpen, project]);
 
-  // Polling loop when rendering
   useEffect(() => {
     if (!isRendering || !activeJob?.id) return;
 
@@ -120,329 +118,163 @@ export const RenderExportModal: React.FC<RenderExportModalProps> = ({
   const isComplete = activeJob?.status === 'RENDERED';
 
   return (
-    <div
-      className="gif-modal-backdrop"
-      onClick={onClose}
-      style={{
-        position: 'fixed',
-        inset: 0,
-        backgroundColor: 'rgba(5, 7, 12, 0.85)',
-        backdropFilter: 'blur(8px)',
-        zIndex: 1000,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 20,
-      }}
-    >
-      <div
-        className="gif-panel"
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          width: '100%',
-          maxWidth: 580,
-          borderRadius: 16,
-          border: '1px solid var(--gif-border-focus)',
-          boxShadow: '0 24px 64px rgba(0, 0, 0, 0.8), 0 0 32px rgba(139, 92, 246, 0.15)',
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
-          backgroundColor: 'var(--gif-bg-surface)',
-        }}
-      >
-        {/* Modal Header */}
-        <div
-          className="gif-panel-header"
-          style={{
-            padding: '16px 20px',
-            borderBottom: '1px solid var(--gif-border-subtle)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 18 }}>🎞️</span>
-            <span style={{ fontWeight: 800, fontSize: 14, letterSpacing: '0.05em' }}>
-              EXPORT GIF ANIMATION
-            </span>
-          </div>
-          <button
-            className="gif-btn-ghost"
-            onClick={onClose}
-            style={{ fontSize: 18, width: 32, height: 32, padding: 0 }}
-          >
-            ✕
-          </button>
-        </div>
-
-        {/* Modal Body */}
-        <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
-          {/* Options (visible when not actively rendering) */}
-          {!isRendering && !isComplete && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--gif-text-muted)' }}>
-                    DITHERING ALGORITHM
-                  </label>
-                  <select
-                    className="gif-select"
-                    value={ditherMode}
-                    onChange={(e) => setDitherMode(e.target.value as DitherMode)}
-                  >
-                    <option value="FLOYD_STEINBERG">Floyd-Steinberg (Smooth)</option>
-                    <option value="BAYER">Bayer 4x4 (Retro Arcade)</option>
-                    <option value="NONE">None (Sharp Pixel Art)</option>
-                  </select>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--gif-text-muted)' }}>
-                    COLOR PALETTE
-                  </label>
-                  <select
-                    className="gif-select"
-                    value={maxColors}
-                    onChange={(e) => setMaxColors(Number(e.target.value))}
-                  >
-                    <option value={256}>256 Colors (Maximum Fidelity)</option>
-                    <option value={128}>128 Colors (Balanced Size)</option>
-                    <option value={64}>64 Colors (Lightweight Retro)</option>
-                  </select>
-                </div>
+    <ModalShell isOpen={isOpen} onClose={onClose} title="EXPORT GIF ANIMATION" eyebrow="RENDER · GIF OUTPUT" maxWidth="max-w-[580px]">
+      <div className="flex flex-col gap-5">
+        {!isRendering && !isComplete && (
+          <div className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="flex flex-col gap-1.5">
+                <TickLabel>DITHERING ALGORITHM</TickLabel>
+                <select
+                  className="gif-select"
+                  value={ditherMode}
+                  onChange={(e) => setDitherMode(e.target.value as DitherMode)}
+                >
+                  <option value="FLOYD_STEINBERG">Floyd-Steinberg (Smooth)</option>
+                  <option value="BAYER">Bayer 4x4 (Retro Arcade)</option>
+                  <option value="NONE">None (Sharp Pixel Art)</option>
+                </select>
               </div>
 
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '12px 14px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                  borderRadius: 8,
-                  border: '1px solid var(--gif-border-subtle)',
-                }}
-              >
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <span style={{ fontSize: 13, fontWeight: 600 }}>Pixel-Art Nearest Sampling</span>
-                  <span style={{ fontSize: 11, color: 'var(--gif-text-muted)' }}>
-                    Preserves razor-sharp pixels without bilinear edge blurring
-                  </span>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={pixelArtMode}
-                  onChange={(e) => setPixelArtMode(e.target.checked)}
-                  style={{ width: 18, height: 18, accentColor: 'var(--gif-accent-purple)', cursor: 'pointer' }}
-                />
-              </div>
-
-              {/* Render Stats Overview */}
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(3, 1fr)',
-                  gap: 8,
-                  padding: 12,
-                  backgroundColor: 'var(--gif-bg-canvas)',
-                  borderRadius: 8,
-                  border: '1px solid var(--gif-border-subtle)',
-                  textAlign: 'center',
-                }}
-              >
-                <div>
-                  <div style={{ fontSize: 10, color: 'var(--gif-text-muted)' }}>DIMENSIONS</div>
-                  <div style={{ fontSize: 13, fontWeight: 700 }}>
-                    {project.outputWidth || project.width} × {project.outputHeight || project.height}
-                  </div>
-                </div>
-                <div>
-                  <div style={{ fontSize: 10, color: 'var(--gif-text-muted)' }}>FPS & TIME</div>
-                  <div style={{ fontSize: 13, fontWeight: 700 }}>
-                    {project.animationConfiguration?.fps || project.fps} FPS · {project.animationConfiguration?.duration || project.duration}s
-                  </div>
-                </div>
-                <div>
-                  <div style={{ fontSize: 10, color: 'var(--gif-text-muted)' }}>TOTAL FRAMES</div>
-                  <div style={{ fontSize: 13, fontWeight: 700 }}>
-                    {Math.round(
-                      (project.animationConfiguration?.duration || project.duration) *
-                      (project.animationConfiguration?.fps || project.fps),
-                    )}
-                  </div>
-                </div>
+              <div className="flex flex-col gap-1.5">
+                <TickLabel>COLOR PALETTE</TickLabel>
+                <select
+                  className="gif-select"
+                  value={maxColors}
+                  onChange={(e) => setMaxColors(Number(e.target.value))}
+                >
+                  <option value={256}>256 Colors (Maximum Fidelity)</option>
+                  <option value={128}>128 Colors (Balanced Size)</option>
+                  <option value={64}>64 Colors (Lightweight Retro)</option>
+                </select>
               </div>
             </div>
-          )}
 
-          {/* Active Rendering Progress Screen */}
-          {isRendering && (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, padding: '16px 0' }}>
-              <div
-                style={{
-                  width: 56,
-                  height: 56,
-                  borderRadius: '50%',
-                  border: '3px solid rgba(139, 92, 246, 0.2)',
-                  borderTopColor: 'var(--gif-accent-purple)',
-                  animation: 'spin 1s linear infinite',
-                }}
+            <label className="flex items-center justify-between gap-4 p-3 bg-carbon-800 rounded-panel border border-console-700 cursor-pointer">
+              <div className="flex flex-col gap-0.5">
+                <span className="font-display font-semibold text-xs text-console-100">Pixel-Art Nearest Sampling</span>
+                <span className="font-mono text-[11px] text-console-400">Preserves razor-sharp pixels without bilinear blur</span>
+              </div>
+              <input
+                type="checkbox"
+                checked={pixelArtMode}
+                onChange={(e) => setPixelArtMode(e.target.checked)}
+                className="w-[18px] h-[18px] accent-[var(--color-signal-500)] cursor-pointer shrink-0"
               />
-              <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <span style={{ fontSize: 15, fontWeight: 700 }}>Rasterizing & Encoding GIF...</span>
-                <span style={{ fontSize: 12, color: 'var(--gif-text-muted)' }}>
-                  Frame {activeJob?.renderedFrames || 0} of {activeJob?.totalFrames || 0} ({percentProgress}%)
-                </span>
-              </div>
+            </label>
 
-              {/* Progress Bar */}
+            <div className="grid grid-cols-3 gap-2 p-3 bg-carbon-950 rounded-panel border border-console-700 text-center">
+              <div>
+                <TickLabel>DIMENSIONS</TickLabel>
+                <div className="font-mono text-xs font-bold text-console-100 mt-1">
+                  {project.outputWidth || project.width} × {project.outputHeight || project.height}
+                </div>
+              </div>
+              <div>
+                <TickLabel>FPS & TIME</TickLabel>
+                <div className="font-mono text-xs font-bold text-console-100 mt-1">
+                  {project.animationConfiguration?.fps || project.fps} FPS · {project.animationConfiguration?.duration || project.duration}s
+                </div>
+              </div>
+              <div>
+                <TickLabel>TOTAL FRAMES</TickLabel>
+                <div className="font-mono text-xs font-bold text-console-100 mt-1">
+                  {Math.round(
+                    (project.animationConfiguration?.duration || project.duration) *
+                    (project.animationConfiguration?.fps || project.fps),
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {isRendering && (
+          <div className="flex flex-col items-center gap-4 py-4">
+            <div className="h-10 w-[2px] bg-signal-500 animate-pulse" aria-hidden="true" />
+            <div className="text-center flex flex-col gap-1">
+              <span className="font-display font-bold text-sm text-console-100">Rasterizing & Encoding GIF…</span>
+              <span className="font-mono text-xs text-console-400">
+                Frame {activeJob?.renderedFrames || 0} of {activeJob?.totalFrames || 0} ({percentProgress}%)
+              </span>
+            </div>
+
+            <div className="w-full h-1.5 bg-carbon-800 rounded-tick overflow-hidden border border-console-700">
               <div
-                style={{
-                  width: '100%',
-                  height: 8,
-                  backgroundColor: 'rgba(255, 255, 255, 0.06)',
-                  borderRadius: 4,
-                  overflow: 'hidden',
+                className="h-full bg-signal-500 transition-all duration-300"
+                style={{ width: `${percentProgress}%` }}
+              />
+            </div>
+
+            <ConsoleButton variant="secondary" onClick={handleCancelRender} className="mt-2 text-[11px]">
+              Cancel Render
+            </ConsoleButton>
+          </div>
+        )}
+
+        {isComplete && activeJob && (
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-full max-h-60 flex items-center justify-center bg-carbon-950 rounded-panel overflow-hidden border border-console-700">
+              <img
+                src={gifApi.getRenderDownloadUrl(activeJob.id)}
+                alt="Rendered GIF"
+                className="max-w-full max-h-60 object-contain"
+                style={{ imageRendering: pixelArtMode ? 'pixelated' : 'auto' }}
+              />
+            </div>
+
+            <div className="flex items-center justify-between w-full font-mono text-xs text-console-400">
+              <span>
+                Size: <strong className="text-console-100">{activeJob.outputSizeBytes ? `${(activeJob.outputSizeBytes / (1024 * 1024)).toFixed(2)} MB` : 'Ready'}</strong>
+              </span>
+              <span>
+                Frames: <strong className="text-console-100">{activeJob.totalFrames}</strong>
+              </span>
+              <span className="text-signal-500 font-bold">✓ Ready for Export</span>
+            </div>
+
+            <TickDivider />
+
+            <div className="flex gap-2.5 w-full">
+              <a
+                href={gifApi.getRenderDownloadUrl(activeJob.id)}
+                download={`animation-${project.name.toLowerCase().replace(/\s+/g, '-')}.gif`}
+                className="console-btn-primary flex-1 flex items-center justify-center gap-2 no-underline"
+              >
+                <span>⬇</span> Download Animated GIF
+              </a>
+
+              <ConsoleButton
+                variant="secondary"
+                onClick={() => {
+                  setActiveJob(null);
+                  setIsRendering(false);
                 }}
+                className="px-4"
               >
-                <div
-                  style={{
-                    width: `${percentProgress}%`,
-                    height: '100%',
-                    background: 'linear-gradient(90deg, #ec4899, #8b5cf6, #06b6d4)',
-                    transition: 'width 0.3s ease',
-                  }}
-                />
-              </div>
-
-              <button
-                className="gif-btn-ghost"
-                onClick={handleCancelRender}
-                style={{ fontSize: 12, marginTop: 8 }}
-              >
-                Cancel Render
-              </button>
+                Re-Render
+              </ConsoleButton>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Render Completed Screen */}
-          {isComplete && activeJob && (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
-              {/* Output Preview */}
-              <div
-                style={{
-                  width: '100%',
-                  maxHeight: 240,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: '#000',
-                  borderRadius: 8,
-                  overflow: 'hidden',
-                  border: '1px solid var(--gif-border-subtle)',
-                }}
-              >
-                <img
-                  src={gifApi.getRenderDownloadUrl(activeJob.id)}
-                  alt="Rendered GIF"
-                  style={{
-                    maxWidth: '100%',
-                    maxHeight: 240,
-                    objectFit: 'contain',
-                    imageRendering: pixelArtMode ? 'pixelated' : 'auto',
-                  }}
-                />
-              </div>
+        {renderError && (
+          <div className="p-2.5 bg-alert-500/10 border border-alert-500/30 rounded-tick text-alert-400 font-mono text-xs">
+            {renderError}
+          </div>
+        )}
 
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  width: '100%',
-                  fontSize: 12,
-                  color: 'var(--gif-text-muted)',
-                }}
-              >
-                <span>
-                  Size: <strong>{activeJob.outputSizeBytes ? `${(activeJob.outputSizeBytes / (1024 * 1024)).toFixed(2)} MB` : 'Ready'}</strong>
-                </span>
-                <span>
-                  Frames: <strong>{activeJob.totalFrames}</strong>
-                </span>
-                <span style={{ color: 'var(--gif-accent-emerald)', fontWeight: 700 }}>
-                  ✓ Ready for Export
-                </span>
-              </div>
-
-              {/* Action Buttons */}
-              <div style={{ display: 'flex', gap: 10, width: '100%' }}>
-                <a
-                  href={gifApi.getRenderDownloadUrl(activeJob.id)}
-                  download={`animation-${project.name.toLowerCase().replace(/\s+/g, '-')}.gif`}
-                  className="gif-btn-primary"
-                  style={{
-                    flex: 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 8,
-                    textDecoration: 'none',
-                    padding: '12px 18px',
-                    fontSize: 14,
-                    fontWeight: 700,
-                  }}
-                >
-                  <span>⬇️</span> Download Animated GIF
-                </a>
-
-                <button
-                  className="gif-btn-ghost"
-                  onClick={() => {
-                    setActiveJob(null);
-                    setIsRendering(false);
-                  }}
-                  style={{ padding: '12px 16px', fontSize: 12 }}
-                >
-                  Re-Render
-                </button>
-              </div>
-            </div>
-          )}
-
-          {renderError && (
-            <div
-              style={{
-                padding: 10,
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                border: '1px solid rgba(239, 68, 68, 0.3)',
-                borderRadius: 8,
-                color: '#f87171',
-                fontSize: 12,
-              }}
-            >
-              {renderError}
-            </div>
-          )}
-
-          {/* Footer Action Buttons (when idle) */}
-          {!isRendering && !isComplete && (
-            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 8 }}>
-              <button className="gif-btn-ghost" onClick={onClose}>
-                Cancel
-              </button>
-              <button
-                className="gif-btn-primary"
-                onClick={handleStartRender}
-                style={{ padding: '10px 24px', fontWeight: 700 }}
-              >
-                🎬 Start GIF Render
-              </button>
-            </div>
-          )}
-        </div>
+        {!isRendering && !isComplete && (
+          <div className="flex gap-2.5 justify-end pt-2 border-t border-console-700">
+            <ConsoleButton variant="secondary" onClick={onClose}>
+              Cancel
+            </ConsoleButton>
+            <ConsoleButton variant="primary" onClick={handleStartRender}>
+              Start GIF Render
+            </ConsoleButton>
+          </div>
+        )}
       </div>
-    </div>
+    </ModalShell>
   );
 };

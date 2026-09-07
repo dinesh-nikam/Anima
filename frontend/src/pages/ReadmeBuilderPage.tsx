@@ -12,6 +12,7 @@ import { ConflictModal } from '../components/readme/ConflictModal';
 import { ValidationBanner } from '../components/readme/ValidationBanner';
 import { PublishModal } from '../components/readme/PublishModal';
 import { PublicationHistoryModal } from '../components/readme/PublicationHistoryModal';
+import { ConsoleSpinner, ConsoleButton } from '../components/ui/primitives';
 
 interface ReadmeBuilderPageProps {
   draftId: string;
@@ -67,34 +68,28 @@ export const ReadmeBuilderPage: React.FC<ReadmeBuilderPageProps> = ({
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-slate-400">
-        <svg className="w-10 h-10 animate-spin text-indigo-500 mb-4" fill="none" viewBox="0 0 24 24">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-        </svg>
-        <p className="text-sm font-semibold text-white">Loading Visual README Builder...</p>
-        <p className="text-xs text-slate-500 mt-1">Resolving components, themes, and authoritative data</p>
+      <div className="min-h-screen bg-carbon-950 flex flex-col items-center justify-center">
+        <ConsoleSpinner label="Resolving components, themes, and authoritative data" />
+        <p className="tick-label mt-2">LOADING VISUAL README BUILDER…</p>
       </div>
     );
   }
 
   if (errorMessage && !draft) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-center">
-        <div className="w-12 h-12 rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 mb-4">
-          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
+      <div className="min-h-screen bg-carbon-950 flex flex-col items-center justify-center p-6 text-center console-rise">
+        <div className="instrument-panel max-w-md w-full p-8 flex flex-col items-center border-alert-500/30">
+          <div className="w-12 h-12 bg-alert-500/10 border border-alert-500/30 flex items-center justify-center text-alert-400 mb-4 rounded-tick">
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h2 className="text-base font-bold text-console-100 mb-1">Failed to load draft</h2>
+          <p className="text-xs text-alert-400 max-w-sm mb-6">{errorMessage}</p>
+          <ConsoleButton variant="secondary" onClick={onBackToDashboard}>
+            Return to Dashboard
+          </ConsoleButton>
         </div>
-        <h2 className="text-base font-bold text-white mb-1">Failed to load draft</h2>
-        <p className="text-xs text-rose-300 max-w-sm mb-6">{errorMessage}</p>
-        <button
-          type="button"
-          onClick={onBackToDashboard}
-          className="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors cursor-pointer"
-        >
-          Return to Dashboard
-        </button>
       </div>
     );
   }
@@ -113,27 +108,30 @@ export const ReadmeBuilderPage: React.FC<ReadmeBuilderPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-carbon-950 text-console-100 flex flex-col overflow-hidden">
       {/* Builder Top Bar Header */}
-      <ReadmeBuilderHeader
-        draftName={draft?.name || 'Untitled README'}
-        themeName={currentTheme?.name || draft?.themeId || 'Default Theme'}
-        templateName={currentTemplate?.name || draft?.templateId || 'Custom'}
-        saveStatus={saveStatus}
-        isDirty={isDirty}
-        canUndo={canUndo}
-        canRedo={canRedo}
-        onUpdateName={updateDraftName}
-        onSave={save}
-        onUndo={undo}
-        onRedo={redo}
-        onOpenThemeModal={() => setIsThemeModalOpen(true)}
-        onOpenTemplateModal={() => setIsTemplateModalOpen(true)}
-        onCopyMarkdown={copyMarkdown}
-        onOpenPublishModal={() => setIsPublishModalOpen(true)}
-        onOpenHistoryModal={() => setIsHistoryModalOpen(true)}
-        onBack={onBackToDashboard}
-      />
+      <div className="scanline">
+        <ReadmeBuilderHeader
+          draftName={draft?.name || 'Untitled README'}
+          themeName={currentTheme?.name || draft?.themeId || 'Default Theme'}
+          templateName={currentTemplate?.name || draft?.templateId || 'Custom'}
+          saveStatus={saveStatus}
+          isDirty={isDirty}
+          canUndo={canUndo}
+          canRedo={canRedo}
+          onUpdateName={updateDraftName}
+          onSave={save}
+          onUndo={undo}
+          onRedo={redo}
+          onOpenThemeModal={() => setIsThemeModalOpen(true)}
+          onOpenTemplateModal={() => setIsTemplateModalOpen(true)}
+          onCopyMarkdown={copyMarkdown}
+          onOpenPublishModal={() => setIsPublishModalOpen(true)}
+          onOpenHistoryModal={() => setIsHistoryModalOpen(true)}
+          onBack={onBackToDashboard}
+        />
+        <div className="tick-divider" aria-hidden="true" />
+      </div>
 
       {/* Validation Banner (if validation errors exist) */}
       <ValidationBanner
@@ -142,45 +140,45 @@ export const ReadmeBuilderPage: React.FC<ReadmeBuilderPageProps> = ({
       />
 
       {/* 3-Region Workspace */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden console-rise">
         {/* Left Region: Sections & Configuration Sidebar */}
-        <div className="w-full lg:w-[420px] shrink-0 flex flex-col border-r border-slate-800 bg-slate-900 z-10">
+        <div className="w-full lg:w-[420px] shrink-0 flex flex-col border-r border-console-700 bg-carbon-900 z-10 console-rise">
           {/* Navigation Sub-Tabs */}
-          <div className="flex border-b border-slate-800 bg-slate-950/40 p-1.5 gap-1 select-none">
+          <div className="flex border-b border-console-700 bg-carbon-950/40 p-1.5 gap-1 select-none">
             <button
               type="button"
               onClick={() => setLeftTab('sections')}
-              className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer text-center ${
+              className={`flex-1 py-1.5 font-mono text-[11px] font-bold uppercase tracking-wide rounded-tick transition-colors cursor-pointer text-center border ${
                 leftTab === 'sections'
-                  ? 'bg-slate-800 text-white shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                  ? 'bg-signal-500 text-carbon-950 border-signal-500'
+                  : 'text-console-400 hover:text-console-100 hover:bg-carbon-800 border-transparent hover:border-console-600'
               }`}
             >
-              Sections ({draft?.sections.length || 0})
+              SECTIONS ({draft?.sections.length || 0})
             </button>
 
             <button
               type="button"
               onClick={() => setLeftTab('configure')}
-              className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer text-center ${
+              className={`flex-1 py-1.5 font-mono text-[11px] font-bold uppercase tracking-wide rounded-tick transition-colors cursor-pointer text-center border ${
                 leftTab === 'configure'
-                  ? 'bg-slate-800 text-white shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                  ? 'bg-signal-500 text-carbon-950 border-signal-500'
+                  : 'text-console-400 hover:text-console-100 hover:bg-carbon-800 border-transparent hover:border-console-600'
               }`}
             >
-              Configure
+              CONFIGURE
             </button>
 
             <button
               type="button"
               onClick={() => setLeftTab('library')}
-              className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer text-center ${
+              className={`flex-1 py-1.5 font-mono text-[11px] font-bold uppercase tracking-wide rounded-tick transition-colors cursor-pointer text-center border ${
                 leftTab === 'library'
-                  ? 'bg-slate-800 text-white shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                  ? 'bg-signal-500 text-carbon-950 border-signal-500'
+                  : 'text-console-400 hover:text-console-100 hover:bg-carbon-800 border-transparent hover:border-console-600'
               }`}
             >
-              Add Components
+              ADD COMPONENTS
             </button>
           </div>
 
@@ -221,17 +219,17 @@ export const ReadmeBuilderPage: React.FC<ReadmeBuilderPageProps> = ({
         </div>
 
         {/* Right Region: Live Preview & Canonical Markdown Panel */}
-        <div className="flex-1 flex flex-col bg-slate-950 overflow-hidden">
+        <div className="flex-1 flex flex-col bg-carbon-950 overflow-hidden console-rise console-rise-1">
           {/* View Mode Tabs (Preview / Markdown) */}
-          <div className="h-12 border-b border-slate-800 bg-slate-900/60 backdrop-blur px-6 flex items-center justify-between select-none">
-            <div className="flex items-center gap-1 bg-slate-800/80 p-1 rounded-xl border border-slate-700/60">
+          <div className="h-12 border-b border-console-700 bg-carbon-900/60 backdrop-blur px-6 flex items-center justify-between select-none">
+            <div className="flex items-center gap-1 bg-carbon-800 p-1 rounded-tick border border-console-600">
               <button
                 type="button"
                 onClick={() => setViewMode('preview')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-tick font-mono text-[11px] font-bold uppercase tracking-wide transition-colors cursor-pointer border ${
                   viewMode === 'preview'
-                    ? 'bg-indigo-600 text-white shadow-sm'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-signal-500 text-carbon-950 border-signal-500'
+                    : 'text-console-400 hover:text-console-100 border-transparent'
                 }`}
               >
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -244,10 +242,10 @@ export const ReadmeBuilderPage: React.FC<ReadmeBuilderPageProps> = ({
               <button
                 type="button"
                 onClick={() => setViewMode('markdown')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-tick font-mono text-[11px] font-bold uppercase tracking-wide transition-colors cursor-pointer border ${
                   viewMode === 'markdown'
-                    ? 'bg-indigo-600 text-white shadow-sm'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-signal-500 text-carbon-950 border-signal-500'
+                    : 'text-console-400 hover:text-console-100 border-transparent'
                 }`}
               >
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -265,9 +263,9 @@ export const ReadmeBuilderPage: React.FC<ReadmeBuilderPageProps> = ({
                   alert('README draft validation passed successfully with 0 errors.');
                 }
               }}
-              className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white px-2.5 py-1 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 font-mono text-[11px] font-bold uppercase tracking-wide text-console-400 hover:text-signal-400 px-2.5 py-1 rounded-tick hover:bg-carbon-800 border border-transparent hover:border-console-600 transition-colors cursor-pointer"
             >
-              <svg className="w-3.5 h-3.5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-3.5 h-3.5 text-signal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <span>Validate Draft</span>

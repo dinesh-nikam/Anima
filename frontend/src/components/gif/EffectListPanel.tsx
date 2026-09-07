@@ -1,5 +1,6 @@
 import React from 'react';
 import type { AnimationEffectInstance } from '../../types/gif';
+import { ConsoleButton, ConsoleBadge, TickLabel, TickDivider } from '../ui/primitives';
 
 interface EffectListPanelProps {
   effects: AnimationEffectInstance[];
@@ -21,31 +22,21 @@ export const EffectListPanel: React.FC<EffectListPanelProps> = ({
   onOpenAddModal,
 }) => {
   return (
-    <div className="gif-panel right">
+    <div className="gif-panel right flex flex-col h-full">
       <div className="gif-panel-header">
-        <span>ACTIVE EFFECTS ({effects.length})</span>
-        <button
-          type="button"
-          onClick={onOpenAddModal}
-          style={{
-            background: 'rgba(139, 92, 246, 0.15)',
-            border: '1px solid rgba(139, 92, 246, 0.4)',
-            color: 'var(--gif-accent-purple)',
-            fontSize: 11,
-            fontWeight: 700,
-            padding: '4px 10px',
-            borderRadius: 6,
-            cursor: 'pointer',
-          }}
-        >
+        <TickLabel>EFFECT STACK — {effects.length}</TickLabel>
+        <ConsoleButton variant="secondary" onClick={onOpenAddModal} className="py-1 px-2 text-[10px]">
           + ADD EFFECT
-        </button>
+        </ConsoleButton>
       </div>
 
-      <div style={{ flex: 1, overflowY: 'auto' }}>
+      <div className="flex-1 overflow-y-auto">
         {effects.length === 0 ? (
-          <div style={{ padding: 24, textAlign: 'center', color: 'var(--gif-text-muted)', fontSize: 13 }}>
-            No effects applied yet. Click <strong style={{ color: 'var(--gif-accent-pink)' }}>RANDOMIZE</strong> or add one above!
+          <div className="p-6 text-center">
+            <TickLabel>NO EFFECTS</TickLabel>
+            <p className="font-mono text-xs text-console-400 mt-2 leading-relaxed">
+              No effects applied yet. Click <span className="text-signal-500 font-bold">RANDOMIZE</span> or add one above.
+            </p>
           </div>
         ) : (
           effects.map((eff) => (
@@ -60,16 +51,15 @@ export const EffectListPanel: React.FC<EffectListPanelProps> = ({
                     checked={eff.enabled}
                     onChange={() => onToggleEnable(eff.id)}
                     title={eff.enabled ? 'Disable Effect' : 'Enable Effect'}
-                    style={{ cursor: 'pointer', accentColor: 'var(--gif-accent-purple)' }}
+                    className="cursor-pointer accent-[var(--color-signal-500)] w-3.5 h-3.5"
                   />
                   <div>
-                    <div style={{ fontSize: 13, fontWeight: 700 }}>{eff.name}</div>
-                    <span className="gif-category-tag">{eff.category}</span>
+                    <div className="font-display font-bold text-[13px] text-console-100">{eff.name}</div>
+                    <ConsoleBadge>{eff.category}</ConsoleBadge>
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  {/* Pin / Lock Toggle */}
+                <div className="flex items-center gap-1">
                   <button
                     type="button"
                     className={`gif-lock-btn ${eff.locked ? 'active' : ''}`}
@@ -79,24 +69,21 @@ export const EffectListPanel: React.FC<EffectListPanelProps> = ({
                     {eff.locked ? '🔒' : '🔓'}
                   </button>
 
-                  {/* Remove Button */}
                   <button
                     type="button"
-                    className="gif-lock-btn"
+                    className="gif-lock-btn text-alert-400 hover:text-alert-400 hover:border-alert-500/40"
                     onClick={() => onRemoveEffect(eff.id)}
                     title="Remove Effect"
-                    style={{ color: '#ef4444' }}
                   >
                     ✕
                   </button>
                 </div>
               </div>
 
-              {/* Intensity Slider */}
               <div className="gif-slider-group">
                 <div className="gif-slider-label">
                   <span>Intensity</span>
-                  <span style={{ fontWeight: 700 }}>{Math.round((eff.intensity ?? 0.5) * 100)}%</span>
+                  <span className="font-mono font-bold text-console-100">{Math.round((eff.intensity ?? 0.5) * 100)}%</span>
                 </div>
                 <input
                   type="range"
@@ -109,11 +96,10 @@ export const EffectListPanel: React.FC<EffectListPanelProps> = ({
                 />
               </div>
 
-              {/* Speed Multiplier Slider */}
               <div className="gif-slider-group">
                 <div className="gif-slider-label">
                   <span>Speed</span>
-                  <span style={{ fontWeight: 700 }}>{(eff.speed ?? 1.0).toFixed(2)}x</span>
+                  <span className="font-mono font-bold text-console-100">{(eff.speed ?? 1.0).toFixed(2)}x</span>
                 </div>
                 <input
                   type="range"
@@ -125,6 +111,16 @@ export const EffectListPanel: React.FC<EffectListPanelProps> = ({
                   className="gif-range-input"
                 />
               </div>
+
+              {eff.locked && (
+                <>
+                  <TickDivider className="mt-3" />
+                  <div className="flex items-center gap-1.5 mt-2">
+                    <ConsoleBadge tone="hazard">LOCKED</ConsoleBadge>
+                    <span className="font-mono text-[10px] text-console-400">Preserved on randomize</span>
+                  </div>
+                </>
+              )}
             </div>
           ))
         )}

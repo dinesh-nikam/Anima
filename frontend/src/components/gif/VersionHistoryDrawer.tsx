@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import type { GifProjectVersion } from '../../types/gif';
 import { gifApi } from '../../api/gifClient';
+import { ModalShell, ConsoleButton, TickLabel } from '../ui/primitives';
 
 interface VersionHistoryDrawerProps {
   projectId: string;
@@ -31,92 +32,49 @@ export const VersionHistoryDrawer: React.FC<VersionHistoryDrawerProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="gif-modal-backdrop" onClick={onClose}>
-      <div className="gif-modal-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 440 }}>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '16px 20px',
-            borderBottom: '1px solid var(--gif-border)',
-          }}
-        >
-          <span style={{ fontSize: 15, fontWeight: 800 }}>VERSION SNAPSHOTS</span>
-          <button
-            type="button"
-            onClick={onClose}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              color: 'var(--gif-text-secondary)',
-              fontSize: 18,
-              cursor: 'pointer',
-            }}
-          >
-            ✕
-          </button>
-        </div>
-
-        <div style={{ flex: 1, overflowY: 'auto', padding: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {loading ? (
-            <div style={{ padding: 30, textAlign: 'center', color: 'var(--gif-text-muted)' }}>
-              Loading snapshots...
-            </div>
-          ) : versions.length === 0 ? (
-            <div style={{ padding: 30, textAlign: 'center', color: 'var(--gif-text-muted)' }}>
-              No previous version snapshots found.
-            </div>
-          ) : (
-            versions.map((ver) => (
-              <div
-                key={ver.id}
-                style={{
-                  background: 'var(--gif-bg-elevated)',
-                  border: '1px solid var(--gif-border)',
-                  borderRadius: 10,
-                  padding: 12,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 700 }}>
-                    Snapshot #{ver.versionNumber}
-                  </div>
-                  <div style={{ fontSize: 11, color: 'var(--gif-text-muted)', marginTop: 2 }}>
-                    {ver.animationConfiguration?.effects?.length || 0} Effects • Seed: {ver.randomSeed}
-                  </div>
-                  <div style={{ fontSize: 10, color: 'var(--gif-text-secondary)', marginTop: 2 }}>
-                    {new Date(ver.createdAt).toLocaleTimeString()}
-                  </div>
+    <ModalShell isOpen={isOpen} onClose={onClose} title="VERSION SNAPSHOTS" eyebrow="HISTORY · RESTORE POINT" maxWidth="max-w-md">
+      <div className="flex flex-col gap-2">
+        {loading ? (
+          <div className="py-10 text-center">
+            <div className="mx-auto h-6 w-[2px] bg-signal-500/60 animate-pulse mb-3" aria-hidden="true" />
+            <TickLabel>LOADING SNAPSHOTS…</TickLabel>
+          </div>
+        ) : versions.length === 0 ? (
+          <div className="py-10 text-center font-mono text-xs text-console-400">
+            No previous version snapshots found.
+          </div>
+        ) : (
+          versions.map((ver) => (
+            <div
+              key={ver.id}
+              className="bg-carbon-800 border border-console-700 rounded-panel p-3 flex items-center justify-between gap-3"
+            >
+              <div className="min-w-0">
+                <div className="font-mono text-xs font-bold text-console-100">
+                  Snapshot #{ver.versionNumber}
                 </div>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    onRestoreVersion(ver);
-                    onClose();
-                  }}
-                  style={{
-                    background: 'rgba(139, 92, 246, 0.15)',
-                    border: '1px solid rgba(139, 92, 246, 0.4)',
-                    color: 'var(--gif-accent-purple)',
-                    padding: '4px 10px',
-                    borderRadius: 6,
-                    fontSize: 11,
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                  }}
-                >
-                  RESTORE
-                </button>
+                <div className="font-mono text-[11px] text-console-400 mt-1">
+                  {ver.animationConfiguration?.effects?.length || 0} Effects · Seed: {ver.randomSeed}
+                </div>
+                <div className="font-mono text-[10px] text-console-500 mt-1">
+                  {new Date(ver.createdAt).toLocaleTimeString()}
+                </div>
               </div>
-            ))
-          )}
-        </div>
+
+              <ConsoleButton
+                variant="secondary"
+                onClick={() => {
+                  onRestoreVersion(ver);
+                  onClose();
+                }}
+                className="shrink-0 text-[10px] py-1.5 px-3"
+              >
+                RESTORE
+              </ConsoleButton>
+            </div>
+          ))
+        )}
       </div>
-    </div>
+    </ModalShell>
   );
 };

@@ -451,6 +451,12 @@ export class GithubClient {
 
   getAuthorizationUrl(state: string): string {
     const callbackUrl = this.configService.get<string>('GITHUB_CALLBACK_URL');
-    return `https://github.com/login/oauth/authorize?client_id=${this.clientId}&state=${state}&scope=user:email,public_repo,repo`;
+    const params = new URLSearchParams({
+      client_id: this.clientId,
+      state,
+      scope: 'user:email,public_repo,repo',
+    });
+    if (callbackUrl) params.set('redirect_uri', callbackUrl);
+    return `https://github.com/login/oauth/authorize?${params.toString()}`;
   }
 }

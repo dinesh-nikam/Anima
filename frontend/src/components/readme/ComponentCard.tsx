@@ -1,4 +1,5 @@
 import type { ComponentSummary } from '../../types/readme';
+import { ConsoleBadge } from '../ui/primitives';
 
 export interface ComponentCardProps {
   component: ComponentSummary;
@@ -6,21 +7,19 @@ export interface ComponentCardProps {
 
 export function ComponentCard({ component }: ComponentCardProps) {
   return (
-    <div className="flex flex-col rounded-lg border border-zinc-200 bg-white p-4">
+    <div className="flex flex-col instrument-panel p-4">
       <div className="flex items-start justify-between gap-2">
-        <h3 className="font-semibold text-zinc-900">{component.name}</h3>
-        <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-700">
-          {component.category}
-        </span>
+        <h3 className="font-mono text-xs font-bold text-console-100">{component.name}</h3>
+        <ConsoleBadge>{component.category}</ConsoleBadge>
       </div>
-      <p className="mt-1 text-sm text-zinc-600">{component.description}</p>
-      <div className="mt-3 text-xs text-zinc-500">
-        <div>ID: <code className="font-mono">{component.id}</code></div>
+      <p className="mt-1 font-mono text-xs text-console-400">{component.description}</p>
+      <div className="mt-3 font-mono text-xs text-console-500 space-y-1">
+        <div>ID: <code className="text-console-300">{component.id}</code></div>
         <div>Version: v{component.version}</div>
         {component.requiredData.length > 0 && (
-          <div className="mt-1">
+          <div className="mt-1 flex flex-wrap gap-1">
             Requires: {component.requiredData.map((d: string) => (
-              <code key={d} className="mr-1 rounded bg-zinc-100 px-1 font-mono">{d}</code>
+              <ConsoleBadge key={d}>{d}</ConsoleBadge>
             ))}
           </div>
         )}

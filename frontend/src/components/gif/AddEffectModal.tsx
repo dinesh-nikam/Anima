@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { EffectMetadata, EffectCategory } from '../../types/gif';
 import { gifApi } from '../../api/gifClient';
+import { ModalShell, ConsoleBadge, ConsoleButton, TickLabel } from '../ui/primitives';
 
 interface AddEffectModalProps {
   isOpen: boolean;
@@ -54,77 +55,37 @@ export const AddEffectModal: React.FC<AddEffectModalProps> = ({
   });
 
   return (
-    <div className="gif-modal-backdrop" onClick={onClose}>
-      <div className="gif-modal-card" onClick={(e) => e.stopPropagation()}>
-        {/* Header */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '16px 20px',
-            borderBottom: '1px solid var(--gif-border)',
-          }}
-        >
-          <span style={{ fontSize: 16, fontWeight: 800 }}>EFFECT CATALOG (31 EFFECTS)</span>
-          <button
-            type="button"
-            onClick={onClose}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              color: 'var(--gif-text-secondary)',
-              fontSize: 18,
-              cursor: 'pointer',
-            }}
-          >
-            ✕
-          </button>
+    <ModalShell isOpen={isOpen} onClose={onClose} title="EFFECT CATALOG — 31 EFFECTS" eyebrow="35 EFFECTS · PROCEDURAL">
+      <div className="flex flex-col gap-4">
+        <input
+          type="text"
+          placeholder="Search effects by name or description..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full px-3 py-2 rounded-tick bg-carbon-800 border border-console-600 text-console-100 font-mono text-xs outline-none focus:border-signal-600 placeholder:text-console-500"
+        />
+
+        <div className="flex gap-1.5 overflow-x-auto pb-1">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat.key}
+              type="button"
+              className={`gif-overlay-btn whitespace-nowrap ${selectedCategory === cat.key ? 'active' : ''}`}
+              onClick={() => setSelectedCategory(cat.key)}
+            >
+              {cat.label}
+            </button>
+          ))}
         </div>
 
-        {/* Search & Category Filter */}
-        <div style={{ padding: '12px 20px', borderBottom: '1px solid var(--gif-border)' }}>
-          <input
-            type="text"
-            placeholder="Search effects by name or description..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '8px 12px',
-              borderRadius: 8,
-              background: 'var(--gif-bg-elevated)',
-              border: '1px solid var(--gif-border)',
-              color: '#ffffff',
-              fontSize: 13,
-              outline: 'none',
-              marginBottom: 10,
-            }}
-          />
-
-          <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }}>
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat.key}
-                type="button"
-                className={`gif-overlay-btn ${selectedCategory === cat.key ? 'active' : ''}`}
-                onClick={() => setSelectedCategory(cat.key)}
-                style={{ whiteSpace: 'nowrap' }}
-              >
-                {cat.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Effect Grid */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div className="flex flex-col gap-2 max-h-[50vh] overflow-y-auto pr-1">
           {loading ? (
-            <div style={{ padding: 40, textAlign: 'center', color: 'var(--gif-text-muted)' }}>
-              Loading catalog...
+            <div className="py-10 text-center">
+              <div className="mx-auto h-6 w-[2px] bg-signal-500/60 animate-pulse mb-3" aria-hidden="true" />
+              <TickLabel>LOADING CATALOG…</TickLabel>
             </div>
           ) : filtered.length === 0 ? (
-            <div style={{ padding: 40, textAlign: 'center', color: 'var(--gif-text-muted)' }}>
+            <div className="py-10 text-center font-mono text-xs text-console-400">
               No matching effects found.
             </div>
           ) : (
@@ -133,75 +94,35 @@ export const AddEffectModal: React.FC<AddEffectModalProps> = ({
               return (
                 <div
                   key={eff.id}
-                  style={{
-                    background: 'var(--gif-bg-elevated)',
-                    border: '1px solid var(--gif-border)',
-                    borderRadius: 10,
-                    padding: 12,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: 12,
-                  }}
+                  className="bg-carbon-800 border border-console-700 rounded-panel p-3 flex items-center justify-between gap-3"
                 >
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                      <span style={{ fontSize: 14, fontWeight: 700 }}>{eff.name}</span>
-                      <span className="gif-category-tag">{eff.category}</span>
-                      <span
-                        style={{
-                          fontSize: 9,
-                          fontWeight: 700,
-                          padding: '1px 5px',
-                          borderRadius: 4,
-                          background:
-                            eff.performanceCost === 'LOW'
-                              ? 'rgba(16, 185, 129, 0.2)'
-                              : eff.performanceCost === 'MEDIUM'
-                              ? 'rgba(245, 158, 11, 0.2)'
-                              : 'rgba(239, 68, 68, 0.2)',
-                          color:
-                            eff.performanceCost === 'LOW'
-                              ? 'var(--gif-accent-emerald)'
-                              : eff.performanceCost === 'MEDIUM'
-                              ? 'var(--gif-accent-amber)'
-                              : '#ef4444',
-                        }}
-                      >
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                      <span className="font-display font-bold text-xs text-console-100">{eff.name}</span>
+                      <ConsoleBadge>{eff.category}</ConsoleBadge>
+                      <ConsoleBadge tone={eff.performanceCost === 'LOW' ? 'accent' : eff.performanceCost === 'MEDIUM' ? 'hazard' : 'default'}>
                         {eff.performanceCost} COST
-                      </span>
+                      </ConsoleBadge>
                     </div>
-                    <div style={{ fontSize: 12, color: 'var(--gif-text-secondary)', lineHeight: 1.4 }}>
+                    <div className="font-mono text-xs text-console-300 leading-relaxed">
                       {eff.description}
                     </div>
                   </div>
 
-                  <button
-                    type="button"
+                  <ConsoleButton
+                    variant={isAlreadyActive ? 'secondary' : 'primary'}
                     disabled={isAlreadyActive}
                     onClick={() => onSelectEffect(eff)}
-                    style={{
-                      background: isAlreadyActive
-                        ? 'rgba(255, 255, 255, 0.05)'
-                        : 'var(--gif-accent-purple)',
-                      border: 'none',
-                      color: isAlreadyActive ? 'var(--gif-text-muted)' : '#ffffff',
-                      padding: '6px 14px',
-                      borderRadius: 8,
-                      fontSize: 12,
-                      fontWeight: 700,
-                      cursor: isAlreadyActive ? 'default' : 'pointer',
-                      whiteSpace: 'nowrap',
-                    }}
+                    className="shrink-0 text-[11px] py-1.5 px-3"
                   >
                     {isAlreadyActive ? 'ADDED' : '+ ADD'}
-                  </button>
+                  </ConsoleButton>
                 </div>
               );
             })
           )}
         </div>
       </div>
-    </div>
+    </ModalShell>
   );
 };

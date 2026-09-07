@@ -18,10 +18,13 @@ export class AuthService {
     private readonly sessionService: SessionService,
   ) {}
 
-  async startGithubOAuth(): Promise<{ url: string; state: string }> {
+  async startGithubOAuth(userId?: string): Promise<{ url: string; state: string }> {
     const state = crypto.randomBytes(16).toString('hex');
-    // Store state in Redis with short TTL (15 mins) to prevent CSRF
-    await this.sessionService['redis'].set(`oauth_state:${state}`, 'valid', 'EX', 900);
+    await this.sessionService.setTemporary(
+      `oauth_state:${state}`,
+      JSON.stringify({ userId: userId || null }),
+      900,
+    );
     
     return {
       url: this.githubClient.getAuthorizationUrl(state),
@@ -31,12 +34,13 @@ export class AuthService {
 
   async handleGithubCallback(code: string, state: string, metadata: { ip: string; userAgent: string }): Promise<{ token: string; user: any }> {
     // 1. Validate State
-    const stateValid = await this.sessionService['redis'].get(`oauth_state:${state}`);
-    if (!stateValid) {
+    const stateValue = await this.sessionService.getTemporary(`oauth_state:${state}`);
+    if (!stateValue) {
       this.logger.warn(`OAuth state validation failed for state: ${state}`);
       throw new BadRequestException('Invalid or expired OAuth state');
     }
-    await this.sessionService['redis'].del(`oauth_state:${state}`);
+    await this.sessionService.deleteTemporary(`oauth_state:${state}`);
+    const stateData = JSON.parse(stateValue) as { userId?: string | null };
 
     // 2. Exchange Code for Token
     const tokenData = await this.githubClient.exchangeCodeForToken(code);
@@ -47,7 +51,7 @@ export class AuthService {
     const primaryEmail = emails[0] || null;
 
     // 4. Find or Create Local User
-    const user = await this.syncGithubUser(githubProfile, primaryEmail, tokenData);
+    const user = await this.syncGithubUser(githubProfile, primaryEmail, tokenData, stateData.userId || undefined);
 
     // 5. Create Session
     const sessionToken = await this.sessionService.createSession(user.id, metadata);
@@ -68,7 +72,7 @@ export class AuthService {
     };
   }
 
-  private async syncGithubUser(profile: any, email: string | null, tokenData: any) {
+  private async syncGithubUser(profile: any, email: string | null, tokenData: any, linkedUserId?: string) {
     return await this.prisma.$transaction(async (tx) => {
       // Find existing account by GitHub ID
       const existingAccount = await tx.githubAccount.findUnique({
@@ -79,8 +83,28 @@ export class AuthService {
       let user;
       let accountId: string;
       if (existingAccount) {
+        if (linkedUserId && existingAccount.userId !== linkedUserId) {
+          throw new BadRequestException('This GitHub account is already linked to another user');
+        }
         user = existingAccount.user;
         accountId = existingAccount.id;
+      } else if (linkedUserId) {
+        user = await tx.user.findUnique({ where: { id: linkedUserId } });
+        if (!user) throw new UnauthorizedException('The current user no longer exists');
+
+        const createdAccount = await tx.githubAccount.create({
+          data: {
+            userId: user.id,
+            githubUserId: profile.id.toString(),
+            githubLogin: profile.login,
+            githubProfileUrl: profile.html_url,
+            avatarUrl: profile.avatar_url,
+            githubName: profile.name,
+            githubEmail: email,
+            scope: tokenData.scope,
+          },
+        });
+        accountId = createdAccount.id;
       } else {
         // Create new user
         user = await tx.user.create({
@@ -107,24 +131,26 @@ export class AuthService {
         accountId = createdAccount.id;
       }
 
-      // Update/Store Token (Encrypted)
-      await tx.oAuthToken.upsert({
-        where: { id: this.getTokenId(accountId) },
-        update: {
-          accessTokenEncrypted: this.encryptionService.encrypt(tokenData.access_token),
-          refreshTokenEncrypted: tokenData.refresh_token ? this.encryptionService.encrypt(tokenData.refresh_token) : null,
-          tokenType: tokenData.token_type,
-          scopes: tokenData.scope,
-          updatedAt: new Date(),
-        },
-        create: {
-          githubAccountId: accountId,
-          accessTokenEncrypted: this.encryptionService.encrypt(tokenData.access_token),
-          refreshTokenEncrypted: tokenData.refresh_token ? this.encryptionService.encrypt(tokenData.refresh_token) : null,
-          tokenType: tokenData.token_type,
-          scopes: tokenData.scope,
-        },
+      // Update the existing account token when present; the schema intentionally
+      // does not make githubAccountId unique, so upsert cannot target it directly.
+      const existingToken = await tx.oAuthToken.findFirst({
+        where: { githubAccountId: accountId },
+        select: { id: true },
       });
+      const tokenDataToStore = {
+        accessTokenEncrypted: this.encryptionService.encrypt(tokenData.access_token),
+        refreshTokenEncrypted: tokenData.refresh_token ? this.encryptionService.encrypt(tokenData.refresh_token) : null,
+        tokenType: tokenData.token_type,
+        scopes: tokenData.scope,
+        updatedAt: new Date(),
+      };
+      if (existingToken) {
+        await tx.oAuthToken.update({ where: { id: existingToken.id }, data: tokenDataToStore });
+      } else {
+        await tx.oAuthToken.create({
+          data: { githubAccountId: accountId, ...tokenDataToStore },
+        });
+      }
 
       await tx.user.update({
         where: { id: user.id },
@@ -133,12 +159,6 @@ export class AuthService {
 
       return user;
     });
-  }
-
-  private getTokenId(accountId: string): string {
-    // Since OAuthToken is 1:1 with GithubAccount for now, we can derive a stable ID
-    // In a real system, you'd query by githubAccountId
-    return `token_${accountId}`;
   }
 
   async validateSession(token: string) {
@@ -173,5 +193,15 @@ export class AuthService {
 
   async revokeSession(token: string): Promise<void> {
     await this.sessionService.deleteSession(token);
+  }
+
+  async getGithubConnection(userId: string): Promise<{ connected: boolean; login?: string; avatarUrl?: string }> {
+    const account = await this.prisma.githubAccount.findUnique({
+      where: { userId },
+      select: { githubLogin: true, avatarUrl: true },
+    });
+    return account
+      ? { connected: true, login: account.githubLogin, avatarUrl: account.avatarUrl }
+      : { connected: false };
   }
 }

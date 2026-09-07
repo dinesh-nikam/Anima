@@ -17,6 +17,13 @@ import { BudgetEstimatorBadge } from './BudgetEstimatorBadge';
 import { ImageUploadDropzone } from './ImageUploadDropzone';
 import { VersionHistoryDrawer } from './VersionHistoryDrawer';
 import { RenderExportModal } from './RenderExportModal';
+import {
+  SignalHeader,
+  ConsoleButton,
+  ConsoleSpinner,
+  TickLabel,
+  TickDivider,
+} from '../ui/primitives';
 import './gifStudio.css';
 
 interface GifStudioProps {
@@ -92,7 +99,6 @@ export const GifStudio: React.FC<GifStudioProps> = ({
   // Handle Global Hotkeys (Space: Play/Pause, R: Randomize)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore if typing in text input
       if (
         document.activeElement?.tagName === 'INPUT' ||
         document.activeElement?.tagName === 'TEXTAREA'
@@ -117,20 +123,16 @@ export const GifStudio: React.FC<GifStudioProps> = ({
   const handleUploadFile = async (file: File) => {
     setIsUploading(true);
     try {
-      // 1. Upload Binary Asset
       const asset = await gifApi.uploadImage(file);
 
-      // 2. Create Project
       const newProj = await gifApi.createProject({
         assetId: asset.id,
         name: file.name.replace(/\.[^/.]+$/, ''),
       });
 
-      // 3. Trigger Algorithmic Computer Vision Analysis
       const { analysis: analysisResult } = await gifApi.analyzeProject(newProj.id);
       setAnalysis(analysisResult);
 
-      // 4. Initial Feature-Aware Randomization
       const { project: randomizedProj, randomizeResult } = await gifApi.randomizeProject(
         newProj.id,
         { profile: 'BALANCED' },
@@ -256,7 +258,6 @@ export const GifStudio: React.FC<GifStudioProps> = ({
       animationConfiguration: updatedConfig,
     });
 
-    // Debounced persist to API
     gifApi.updateProject(project.id, {
       animationConfiguration: updatedConfig,
     }).catch((err) => console.error('Failed to sync effect edit:', err));
@@ -311,10 +312,21 @@ export const GifStudio: React.FC<GifStudioProps> = ({
 
   if (loading) {
     return (
-      <div className="gif-studio-root" style={{ alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ fontSize: 32, marginBottom: 12 }}>🎲</div>
-        <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--gif-text-secondary)' }}>
-          Loading Animation Studio...
+      <div className="gif-studio-root">
+        <SignalHeader
+          brandMark="AN"
+          brandLabel="GIF ANIMATION STUDIO"
+          live="PROCEDURAL MOTION · 35 EFFECTS"
+          right={
+            onBackToApp ? (
+              <ConsoleButton variant="secondary" onClick={onBackToApp}>
+                ← Back to App
+              </ConsoleButton>
+            ) : undefined
+          }
+        />
+        <div className="flex-1 grid place-items-center">
+          <ConsoleSpinner label="Loading Animation Studio..." />
         </div>
       </div>
     );
@@ -322,72 +334,40 @@ export const GifStudio: React.FC<GifStudioProps> = ({
 
   return (
     <div className="gif-studio-root">
-      {/* Top Header */}
-      <header className="gif-studio-header">
-        <div className="gif-brand-area">
-          {onBackToApp && (
-            <button
-              type="button"
-              onClick={onBackToApp}
-              className="gif-icon-btn"
-              title="Return to Main Dashboard"
-            >
-              ←
-            </button>
-          )}
-          <span className="gif-brand-logo">Random GIF Studio</span>
-          <span className="gif-brand-badge">PHASE 5 PREVIEW</span>
-        </div>
-
-        {/* Project Name, Snapshots and Export Actions */}
-        {project && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 13, fontWeight: 700 }}>
-              {project.name}
-            </span>
-            <button
-              type="button"
-              onClick={() => setIsHistoryDrawerOpen(true)}
-              className="gif-overlay-btn"
-              title="View Previous Snapshots"
-            >
-              📜 SNAPSHOTS
-            </button>
-            <button
-              type="button"
-              onClick={() => setIsExportModalOpen(true)}
-              className="gif-btn-primary"
-              style={{ padding: '6px 14px', fontSize: 12, fontWeight: 700 }}
-              title="Render and Download High Quality Animated GIF"
-            >
-              🎬 EXPORT GIF
-            </button>
+      <SignalHeader
+        brandMark="AN"
+        brandLabel="GIF ANIMATION STUDIO"
+        live="PROCEDURAL MOTION · 35 EFFECTS"
+        right={
+          <div className="flex items-center gap-2">
+            {project && (
+              <>
+                <span className="hidden lg:inline font-mono text-xs text-console-300 truncate max-w-[160px]">
+                  {project.name}
+                </span>
+                <ConsoleButton variant="secondary" onClick={() => setIsHistoryDrawerOpen(true)}>
+                  SNAPSHOTS
+                </ConsoleButton>
+                <ConsoleButton variant="primary" onClick={() => setIsExportModalOpen(true)}>
+                  EXPORT GIF
+                </ConsoleButton>
+              </>
+            )}
+            {onBackToApp && (
+              <ConsoleButton variant="secondary" onClick={onBackToApp}>
+                ← Back
+              </ConsoleButton>
+            )}
           </div>
-        )}
-
-        {/* Prominent RANDOMIZE Action Button */}
-        {project ? (
-          <RandomizeControls
-            currentProfile={activeProfile}
-            currentSeed={project.randomSeed ? project.randomSeed.toString() : '0'}
-            isRandomizing={isRandomizing}
-            appliedBiases={appliedBiases}
-            onRandomize={handleRandomize}
-            onProfileChange={(p) => setActiveProfile(p)}
-          />
-        ) : (
-          <div style={{ fontSize: 12, color: 'var(--gif-text-muted)' }}>
-            Upload an image to start animating!
-          </div>
-        )}
-      </header>
+        }
+      />
 
       {/* Main Workspace Grid */}
       <div className="gif-workspace-grid">
         {/* Left Panel: Upload, Image Info & Budget Estimator */}
         <aside className="gif-panel">
           <div className="gif-panel-header">
-            <span>PROJECT SOURCE</span>
+            <TickLabel>PROJECT SOURCE</TickLabel>
           </div>
 
           <ImageUploadDropzone
@@ -396,33 +376,39 @@ export const GifStudio: React.FC<GifStudioProps> = ({
           />
 
           {project && (
-            <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <div style={{ fontSize: 12, display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <span style={{ color: 'var(--gif-text-muted)', fontWeight: 600 }}>IMAGE RESOLUTION</span>
-                <span style={{ fontWeight: 700 }}>{project.width} × {project.height} px ({project.format})</span>
+            <div className="p-3.5 flex flex-col gap-3">
+              <div className="flex flex-col gap-1">
+                <TickLabel>IMAGE RESOLUTION</TickLabel>
+                <span className="font-mono text-xs font-bold text-console-100">
+                  {project.width} × {project.height} px ({project.format})
+                </span>
               </div>
 
+              <TickDivider />
+
               {analysis && (
-                <div style={{ fontSize: 12, display: 'flex', flexDirection: 'column', gap: 4 }}>
-                  <span style={{ color: 'var(--gif-text-muted)', fontWeight: 600 }}>CV ANALYSIS</span>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                    {analysis.pixelArtConfidence >= 0.7 && (
-                      <span className="gif-category-tag" style={{ color: 'var(--gif-accent-purple)' }}>Pixel-Art</span>
-                    )}
-                    {analysis.darkSceneConfidence >= 0.6 && (
-                      <span className="gif-category-tag" style={{ color: 'var(--gif-accent-amber)' }}>Dark Scene</span>
-                    )}
-                    {analysis.photographicConfidence >= 0.6 && (
-                      <span className="gif-category-tag" style={{ color: 'var(--gif-accent-cyan)' }}>Photo</span>
-                    )}
-                    {analysis.hasAlpha && (
-                      <span className="gif-category-tag" style={{ color: 'var(--gif-accent-emerald)' }}>Alpha Cutout</span>
-                    )}
+                <>
+                  <div className="flex flex-col gap-1.5">
+                    <TickLabel>CV ANALYSIS</TickLabel>
+                    <div className="flex flex-wrap gap-1.5">
+                      {analysis.pixelArtConfidence >= 0.7 && (
+                        <span className="console-badge console-badge-accent">Pixel-Art</span>
+                      )}
+                      {analysis.darkSceneConfidence >= 0.6 && (
+                        <span className="console-badge console-badge-hazard">Dark Scene</span>
+                      )}
+                      {analysis.photographicConfidence >= 0.6 && (
+                        <span className="console-badge">Photo</span>
+                      )}
+                      {analysis.hasAlpha && (
+                        <span className="console-badge console-badge-accent">Alpha Cutout</span>
+                      )}
+                    </div>
                   </div>
-                </div>
+                  <TickDivider />
+                </>
               )}
 
-              {/* Real-Time Frame & Memory Budget Estimator */}
               <BudgetEstimatorBadge
                 width={project.width}
                 height={project.height}
@@ -431,42 +417,65 @@ export const GifStudio: React.FC<GifStudioProps> = ({
                 effects={activeEffects}
                 pixelArtMode={pixelArtMode}
               />
+
+              {project && (
+                <>
+                  <TickDivider />
+                  <RandomizeControls
+                    currentProfile={activeProfile}
+                    currentSeed={project.randomSeed ? project.randomSeed.toString() : '0'}
+                    isRandomizing={isRandomizing}
+                    appliedBiases={appliedBiases}
+                    onRandomize={handleRandomize}
+                    onProfileChange={(p) => setActiveProfile(p)}
+                  />
+                </>
+              )}
+            </div>
+          )}
+
+          {!project && (
+            <div className="p-4">
+              <p className="font-mono text-[11px] leading-relaxed text-console-400">
+                Upload an image to start animating. Analysis runs automatically.
+              </p>
             </div>
           )}
         </aside>
 
         {/* Center: Canvas Live 60fps Viewport */}
-        <main style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
+        <main className="relative flex flex-col bg-carbon-950">
           {project && imageSrc ? (
-            <CanvasPreview
-              imageSrc={imageSrc}
-              effects={activeEffects}
-              currentTime={currentTime}
-              duration={duration}
-              seed={seed}
-              pixelArtMode={pixelArtMode}
-            />
+            <div className="flex-1 flex flex-col p-3 gap-2">
+              <div className="corner-ticks flex-1 flex flex-col rounded-media border border-console-700 overflow-hidden bg-carbon-900">
+                <CanvasPreview
+                  imageSrc={imageSrc}
+                  effects={activeEffects}
+                  currentTime={currentTime}
+                  duration={duration}
+                  seed={seed}
+                  pixelArtMode={pixelArtMode}
+                />
+              </div>
+              <div className="flex items-center gap-2 font-mono text-[10px] text-console-400">
+                <span className="w-1.5 h-1.5 bg-signal-500 rounded-tick animate-pulse" aria-hidden="true" />
+                LIVE PREVIEW · 60 FPS · SEED {seed}
+              </div>
+            </div>
           ) : (
-            <div
-              style={{
-                flex: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'var(--gif-text-muted)',
-                gap: 12,
-              }}
-            >
-              <span style={{ fontSize: 48 }}>🎨</span>
-              <span style={{ fontSize: 16, fontWeight: 700 }}>No Image Loaded</span>
-              <span style={{ fontSize: 13 }}>Drop an image on the left to activate the animation canvas</span>
+            <div className="flex-1 flex flex-col items-center justify-center gap-3 p-8 text-center">
+              <div className="h-8 w-[2px] bg-signal-500/60" aria-hidden="true" />
+              <TickLabel accent>NO SIGNAL</TickLabel>
+              <span className="font-display font-bold text-sm text-console-100">No Image Loaded</span>
+              <span className="font-mono text-xs text-console-400">
+                Drop an image on the left to activate the animation canvas
+              </span>
             </div>
           )}
         </main>
 
         {/* Right Panel: Effect Stack & Parameter Controls */}
-        <aside>
+        <aside className="gif-panel right">
           <EffectListPanel
             effects={activeEffects}
             onToggleLock={handleToggleLock}

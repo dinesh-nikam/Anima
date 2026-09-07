@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ConsoleButton, ConsoleBadge } from '../ui/primitives';
 
 interface MarkdownViewPanelProps {
   markdown: string;
@@ -22,32 +23,28 @@ export const MarkdownViewPanel: React.FC<MarkdownViewPanelProps> = ({
   const charCount = markdown.length;
 
   return (
-    <div className="flex flex-col h-full bg-slate-950">
-      {/* Meta Header */}
-      <div className="px-6 py-3 border-b border-slate-800 bg-slate-900/40 flex items-center justify-between text-xs">
-        <div className="flex items-center gap-4 text-slate-400">
-          <span className="flex items-center gap-1.5 font-medium text-slate-300">
-            <svg className="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <div className="flex flex-col h-full bg-carbon-950">
+      {/* Meta Header — console chrome */}
+      <div className="px-6 py-3 border-b border-console-700 bg-carbon-900/60 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <span className="tick-label-accent flex items-center gap-1.5">
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
             </svg>
-            Canonical Markdown
+            CANONICAL MARKDOWN
           </span>
 
-          <span className="text-slate-600">|</span>
-
-          <span>{lines.length} lines</span>
-          <span>{wordCount} words</span>
-          <span>{charCount} characters</span>
+          <span className="hidden sm:flex items-center gap-2">
+            <ConsoleBadge>{lines.length} lines</ConsoleBadge>
+            <ConsoleBadge>{wordCount} words</ConsoleBadge>
+            <ConsoleBadge>{charCount} chars</ConsoleBadge>
+          </span>
         </div>
 
-        <button
-          type="button"
-          onClick={handleCopy}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition-colors cursor-pointer shadow-sm shadow-indigo-600/30"
-        >
+        <ConsoleButton variant="primary" onClick={handleCopy}>
           {copied ? (
             <>
-              <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
               <span>Copied!</span>
@@ -60,24 +57,28 @@ export const MarkdownViewPanel: React.FC<MarkdownViewPanelProps> = ({
               <span>Copy Markdown</span>
             </>
           )}
-        </button>
+        </ConsoleButton>
       </div>
 
-      {/* Monospace Code Display */}
-      <div className="flex-1 overflow-y-auto p-6 font-mono text-xs flex">
-        {/* Line Numbers */}
-        <div className="select-none pr-4 text-right text-slate-600 border-r border-slate-800/80 mr-4 font-mono">
-          {lines.map((_, i) => (
-            <div key={i} className="leading-6">
-              {i + 1}
-            </div>
-          ))}
-        </div>
+      {/* Monospace Code Display — framed as instrument panel, not repainting artifact */}
+      <div className="flex-1 overflow-hidden p-4">
+        <div className="h-full flex font-mono text-xs instrument-panel overflow-hidden rounded-panel">
+          {/* Line Numbers */}
+          <div className="select-none pr-4 pl-3 py-6 text-right text-console-500 border-r border-console-700 bg-carbon-900 overflow-y-auto">
+            {lines.map((_, i) => (
+              <div key={i} className="leading-6">
+                {i + 1}
+              </div>
+            ))}
+          </div>
 
-        {/* Code Content */}
-        <pre className="flex-1 text-slate-200 leading-6 overflow-x-auto whitespace-pre font-mono">
-          <code>{markdown}</code>
-        </pre>
+          {/* Code Content */}
+          <div className="flex-1 overflow-auto p-6">
+            <pre className="text-console-200 leading-6 whitespace-pre">
+              <code>{markdown}</code>
+            </pre>
+          </div>
+        </div>
       </div>
     </div>
   );

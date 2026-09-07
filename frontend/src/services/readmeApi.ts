@@ -15,6 +15,8 @@ import type {
 
 const BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3000/api/v1';
 
+export const getGithubConnectUrl = (): string => `${BASE_URL}/auth/github/connect`;
+
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const headers = new Headers(options.headers || {});
   if (!headers.has('Content-Type') && options.body && typeof options.body === 'string') {
@@ -48,7 +50,15 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 
 export const readmeApi = {
   // Session / Auth
-  async getSession(): Promise<{ authenticated: boolean; user?: { id: string; displayName?: string; role?: string } }> {
+  async getSession(): Promise<{
+    authenticated: boolean;
+    user?: {
+      id: string;
+      displayName?: string;
+      role?: string;
+      github?: { connected: boolean; login?: string; avatarUrl?: string };
+    };
+  }> {
     return request('/auth/session');
   },
 
