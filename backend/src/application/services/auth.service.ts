@@ -156,12 +156,12 @@ export class AuthService {
 
   async getDevUser() {
     let devUser = await this.prisma.user.findFirst({
-      where: { email: 'dev@local.veriflow' },
+      where: { email: 'dev@local.anima' },
     });
     if (!devUser) {
       devUser = await this.prisma.user.create({
         data: {
-          email: 'dev@local.veriflow',
+          email: 'dev@local.anima',
           displayName: 'Local Developer',
           role: 'ADMIN',
           status: 'ACTIVE',

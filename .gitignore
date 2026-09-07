@@ -40,3 +40,5 @@ backend/prisma/migrations/
 # Backend runtime
 backend/dist/
 backend/coverage/
+backend/storage/
+storage/

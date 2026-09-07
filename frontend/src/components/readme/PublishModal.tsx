@@ -30,7 +30,7 @@ export const PublishModal: React.FC<PublishModalProps> = ({
   const [selectedBranch, setSelectedBranch] = useState<string>('');
   const [customPath, setCustomPath] = useState<string>('README.md');
   const [commitMessage, setCommitMessage] = useState<string>(
-    `docs: update README via VeriFlow`,
+    `docs: update README via Anima`,
   );
 
   const [loadingRepos, setLoadingRepos] = useState<boolean>(false);
@@ -341,7 +341,7 @@ export const PublishModal: React.FC<PublishModalProps> = ({
                   type="text"
                   value={commitMessage}
                   onChange={(e) => setCommitMessage(e.target.value)}
-                  placeholder="docs: update README via VeriFlow"
+                  placeholder="docs: update README via Anima"
                   className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-slate-200 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                 />
               </div>

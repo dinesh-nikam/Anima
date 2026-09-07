@@ -50,8 +50,8 @@ async function bootstrap() {
 
   // Swagger Documentation Setup
   const config = new DocumentBuilder()
-    .setTitle('VeriFlow GitHub Profile & Contribution Builder')
-    .setDescription('Enterprise-grade REST API for GitHub synchronization, analytics, trophy derivation, dynamic README drafting, rendering, and safe publishing.')
+    .setTitle('Anima Developer Identity & Procedural Animation Engine')
+    .setDescription('Enterprise-grade REST API for GitHub synchronization, analytics, streak derivation, dynamic README drafting, and procedural motion graphics.')
     .setVersion('1.0.0')
     .addCookieAuth('session_token')
     .build();

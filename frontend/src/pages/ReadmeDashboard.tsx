@@ -84,12 +84,12 @@ export const ReadmeDashboard: React.FC<ReadmeDashboardProps> = ({ onOpenDraft, o
       {/* Top Navigation */}
       <header className="h-16 border-b border-slate-800 bg-slate-900/60 backdrop-blur-md px-8 flex items-center justify-between sticky top-0 z-20">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center font-black text-white text-sm shadow-md shadow-indigo-600/30">
-            VF
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center font-black text-white text-sm shadow-md shadow-indigo-600/30">
+            AN
           </div>
           <div>
-            <h1 className="text-sm font-bold text-white tracking-tight">VeriFlow</h1>
-            <p className="text-[10px] text-slate-400 font-medium">Visual README Studio</p>
+            <h1 className="text-sm font-bold text-white tracking-tight">Anima</h1>
+            <p className="text-[10px] text-slate-400 font-medium">Visual README & Procedural Motion Studio</p>
           </div>
         </div>
 

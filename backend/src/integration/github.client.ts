@@ -105,7 +105,7 @@ export class GithubClient {
       timeout: 15000,
       headers: {
         Accept: 'application/vnd.github+json',
-        'User-Agent': 'VeriFlow-Profile-Builder',
+        'User-Agent': 'Anima-Profile-Engine',
       },
     });
   }

@@ -170,7 +170,7 @@ export class ReadmePublicationService {
         expectedCurrentSha: currentResult.exists ? currentResult.sha || null : null,
         renderedContentHash: renderedHash,
         canonicalMarkdown,
-        commitMessage: dto.commitMessage || `docs: update ${cleanPath} via VeriFlow`,
+        commitMessage: dto.commitMessage || `docs: update ${cleanPath} via Anima`,
         diffSummary: diff.summary as any,
         status: ReadmePublicationStatus.PREVIEWED,
         expiresAt,
@@ -257,7 +257,7 @@ export class ReadmePublicationService {
 
     const token = await this.getDecryptedToken(userId);
     const commitMessage =
-      dto.commitMessage?.trim() || intent.commitMessage || `docs: update ${intent.path} via VeriFlow`;
+      dto.commitMessage?.trim() || intent.commitMessage || `docs: update ${intent.path} via Anima`;
 
     // 3. Check for No-Op Publication
     const diffSummary = intent.diffSummary as unknown as DiffSummary;
